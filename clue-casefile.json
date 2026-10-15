@@ -1,0 +1,189 @@
+{
+ "_note": "SPOILERS. Load this on the site's Setup tab. Do not add this file to your GitHub repo.",
+ "content": {
+  "items": {
+   "d1pm": {
+    "title": "A butler walks into the office",
+    "body": "During today's end-of-day announcements, a stranger walked into the office. He introduced himself as Wadsworth, the school's nighttime butler. What does a butler do? He buttles.\n\nWadsworth saw something late last night that worried him. Nobody is in danger, but he thinks we should know about it. The trouble is the Butler's Code: a butler may never tell what he saw while on duty.\n\nSo the principal made a deal with him. Wadsworth will make a list of people, places and things. He can't tell us what he saw, but he can help us cross off what he didn't see. He has to do it with puzzles and riddles, though, because the Butler's Code says a butler must be befuddling.",
+    "statement": {
+     "who": "What we know so far",
+     "points": [
+      "Wadsworth saw one adult, in one place at the school, using one object.",
+      "Figure out all three and you can work out what he saw.",
+      "His list goes up tomorrow morning. Watch the lobby."
+     ]
+    }
+   },
+   "d2am": {
+    "title": "Wadsworth's list is posted",
+    "letter": true,
+    "body": "Wadsworth has posted his list in the lobby and around the school: four people, four places and four things. Three of them are what he really saw. The other nine are what he did not see.\n\nThe four people are teachers and staff from our school. Wadsworth doesn't know their real names, so he gave them nicknames.",
+    "riddles": [
+     {
+      "label": "Riddle No. 1",
+      "text": "I can spell this out for you by using only two letters. Figure out which item in the list I am referring to."
+     }
+    ],
+    "statement": {
+     "who": "How to play",
+     "points": [
+      "Talk it over with your class and agree on one answer.",
+      "Fill in today's answer sheet with your tiebreaker guess, on paper or on this website.",
+      "Answers are due by noon. The class with the right answer and the closest tiebreaker wins a prize."
+     ]
+    }
+   },
+   "d2mid": {
+    "title": "Riddle No. 1, solved",
+    "body": "What can you spell with only two letters? Try C and Y. Write it as C-AND-Y and you get CANDY.\n\nThe Candy Stick is off the list. Thank you to every class that sent in an answer. There are more chances to win tomorrow.",
+    "elim": [
+     "candy"
+    ]
+   },
+   "d2pm": {
+    "title": "The interview: Colonel Mustard",
+    "body": "The principal, who claims to be a world-class private detective, called Colonel Mustard in for questioning. From now on the principal will interview the people on the list in person, so Wadsworth's puzzles will only cover the places and the things.\n\nListen closely to every interview. On the last day, your class will need these clues to work out what really happened.",
+    "statement": {
+     "who": "Colonel Mustard's statement",
+     "points": [
+      "Admits to being at the school late one night last week.",
+      "Says a note asked them to come in and help with a special project.",
+      "Found nobody there, waited in their room for a few minutes, then went home.",
+      "Says they did nothing suspicious, and certainly nothing with a shovel or a wrench.",
+      "About the mustard smell: likes an after-school snack of cheese and cured meats with spicy mustard."
+     ]
+    }
+   },
+   "d3am": {
+    "title": "Two new puzzles",
+    "body": "Wadsworth is back with two puzzles today: one from the morning announcement and one on posters around the school. Solve both and two more items come off the list.",
+    "riddles": [
+     {
+      "label": "The riddle",
+      "text": "This word rhymes with what happens when cats and dogs fall together."
+     },
+     {
+      "label": "The picture puzzle",
+      "posterKey": "p3",
+      "alt": "Wadsworth's picture puzzle for Day 3"
+     }
+    ]
+   },
+   "d3mid": {
+    "title": "Both puzzles, solved",
+    "body": "The riddle: when it rains cats and dogs, you get a drench. What rhymes with drench? Wrench.\n\nThe picture puzzle showed Dobby the Elf with the words rhymes with. What rhymes with Dobby? Lobby.\n\nThat leaves five suspicious items on the list.",
+    "elim": [
+     "wrench",
+     "lobby"
+    ]
+   },
+   "d3pm": {
+    "title": "The interview: Mrs. Peacock",
+    "body": "The principal put together the clues so far: an annoyed Colonel Mustard leaving in a hurry, a sweet smell, a loud clank, a scream, and running footsteps. What could it all mean?",
+    "statement": {
+     "who": "Mrs. Peacock's statement",
+     "points": [
+      "Was also at the school late one night, after getting a note about a special project.",
+      "Saw muddy footprints on the way in.",
+      "Noticed an odd, sweet smell coming from inside the school.",
+      "Then heard a loud clank, a scream, and footsteps running down the hallway.",
+      "Left right away and went straight home.",
+      "On the way out, saw Colonel Mustard driving away, looking quite annoyed."
+     ]
+    }
+   },
+   "d4am": {
+    "title": "A message from Yvette the maid",
+    "body": "Wadsworth couldn't come in today, so his nighttime maid, Yvette, delivered his message. She works so fast she calls herself a minute-maid. There is one riddle from the announcement and one picture puzzle posted around the school.",
+    "riddles": [
+     {
+      "label": "The riddle",
+      "text": "What would you say to a strawberry who told you it was a banana?"
+     },
+     {
+      "label": "The picture puzzle",
+      "posterKey": "p4",
+      "alt": "Wadsworth's picture puzzle for Day 4"
+     }
+    ]
+   },
+   "d4mid": {
+    "title": "Both puzzles, solved",
+    "body": "The riddle: you'd tell that strawberry, That's a lie! You're not a banana, you're a berry. Or for short: Lie! Berry. Library.\n\nThe picture puzzle: a crying cow, or really a baby cow. A calf with a tear. Calf-tear. Cafeteria.\n\nWith the library and the cafeteria crossed off, only one place is left. It happened on the playground. The object was either the teapot or the shovel.",
+    "elim": [
+     "library",
+     "cafeteria"
+    ]
+   },
+   "d4pm": {
+    "title": "The interview: Professor Plum and Ms. White",
+    "body": "Professor Plum and Ms. White came in together for questioning. The principal believes we now have almost everything we need to solve the mystery.",
+    "statement": {
+     "who": "What they said",
+     "points": [
+      "Both admit they were at the school late one night last week.",
+      "They were working on a secret project. They promise to explain it tomorrow and say it is nothing to worry about.",
+      "Professor Plum thinks Colonel Mustard and Mrs. Peacock are the sus ones.",
+      "Ms. White says Colonel Mustard gets cranky when hungry and is trying to cut back on sugar.",
+      "Professor Plum asks why Mrs. Peacock didn't stop Colonel Mustard or report the scream."
+     ]
+    }
+   },
+   "d5am": {
+    "title": "The final clue",
+    "body": "Wadsworth couldn't be there this morning, so he left an audio clip for the announcements. Listen carefully: it tells you whether to cross off the teapot or the shovel.\n\nNow it's your turn to be the detective. With your class, decide who it was, where, and with which object. Then write what you think Wadsworth saw that night. One sentence or a few paragraphs is fine. Answers are due by 1:00 p.m.\n\nThe class that comes closest to the real story, or writes the best or funniest one, wins the grand prize.",
+    "statement": {
+     "who": "The clues so far",
+     "points": [
+      "It was Mrs. Peacock, Colonel Mustard, Professor Plum or Ms. White.",
+      "It happened on the playground.",
+      "The object was the teapot or the shovel. Today's clue tells you which.",
+      "Think back: notes about a special project, muddy footprints, a sweet smell, a clank, a scream, running footsteps, and a very annoyed Colonel Mustard."
+     ]
+    }
+   },
+   "d5fin": {
+    "title": "Case closed",
+    "body": "First the principal announced a grand theory about Colonel Mustard, a plate of sausages and a pot of French mustard. Wadsworth said it was wrong in every possible way.\n\nThen Wadsworth finally told us what he saw. He looked out at the playground and saw Ms. White, muddy and flustered, digging with a shovel and muttering that once she found it, the whole school would get what was coming to them. A moment later, Professor Plum ran down the hallway, spat something out a window and screamed.\n\nMs. White explained everything. Years ago she buried her Nana's secret recipe box on the playground, but nobody made a map. She has been coming in at night to dig for it so she could make treats for the whole school. Without the recipes she was guessing, and Professor Plum tasted one of her mistakes: warm apple cider made with apple cider vinegar. The clank was her shovel finally hitting the recipe tin. Colonel Mustard was annoyed because she left sweets on his desk while he was cutting back on sugar. And all those prize treats this week? Practice batches.\n\nThe singing teapot in this morning's clue crossed the teapot off the list.",
+    "elim": [
+     "teapot",
+     "peacock",
+     "mustard",
+     "plum"
+    ],
+    "solution": {
+     "person": "white",
+     "place": "playground",
+     "thing": "shovel"
+    }
+   }
+  }
+ },
+ "answers": {
+  "r2": {
+   "a": [
+    "candy"
+   ],
+   "tb": 528
+  },
+  "r3": {
+   "a": [
+    "wrench",
+    "lobby"
+   ],
+   "tb": 2959
+  },
+  "r4": {
+   "a": [
+    "library",
+    "cafeteria"
+   ],
+   "tb": null
+  },
+  "final": {
+   "person": "white",
+   "place": "playground",
+   "thing": "shovel"
+  }
+ }
+}

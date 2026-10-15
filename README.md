@@ -12,6 +12,7 @@ Answers and unreleased clues are never in this repo. They live in Firestore and 
 | File | Goes in the repo? | What it is |
 |---|---|---|
 | `index.html` | Yes | The whole site |
+| `logo.jpg`, `favicon.ico`, `favicon-32.png`, `icon-192.png`, `apple-touch-icon.png` | Yes | Winchester Clue logo and browser icons. Keep them next to `index.html`. |
 | `firestore.rules` | Yes (reference) | Security rules to paste into Firebase |
 | `.gitignore` | Yes | Keeps the case file out of the repo |
 | `clue-casefile.json` | **No** | Clue wording and the answer key. Load it from the producer desk. |
@@ -39,7 +40,7 @@ Add one document per extra producer (the principal, for example).
 **Project settings (gear icon) > Your apps > Web (`</>`)**: register an app, then copy the `firebaseConfig` object. Paste it over the placeholder at the top of the `<script type="module">` in `index.html`. The web config is not a secret.
 
 ### 5. Publish on GitHub Pages
-Commit `index.html`, `firestore.rules`, `README.md` and `.gitignore`. In the repo, go to **Settings > Pages**, set the source to your branch, and save.
+Commit `index.html`, the logo and icon files, `firestore.rules`, `README.md` and `.gitignore`. In the repo, go to **Settings > Pages**, set the source to your branch, and save.
 
 ### 6. Load the case file
 Open the site, click **Producer sign-in** in the footer, and sign in. Open **Producer desk > Setup** and choose `clue-casefile.json`. Then fill in the school name, the Day 1 date and the announcement times, and add photos of your four suspects and four locations.

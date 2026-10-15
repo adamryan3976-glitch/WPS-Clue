@@ -109,10 +109,10 @@
    },
    "d4mid": {
     "title": "Both puzzles, solved",
-    "body": "The riddle: you'd tell that strawberry, That's a lie! You're not a banana, you're a berry. Or for short: Lie! Berry. Library.\n\nThe picture puzzle: a crying cow, or really a baby cow. A calf with a tear. Calf-tear. Cafeteria.\n\nWith the library and the cafeteria crossed off, only one place is left. It happened on the playground. The object was either the teapot or the shovel.",
+    "body": "The riddle: you'd tell that strawberry, That's a lie! You're not a banana, you're a berry. Or for short: Lie! Berry. Library.\n\nThe picture puzzle: a wizard's staff, plus a broom with its B crossed out. Staff + room. Staffroom.\n\nWith the library and the staffroom crossed off, only one place is left. It happened in the garden. The object was either the teapot or the shovel.",
     "elim": [
      "library",
-     "cafeteria"
+     "staffroom"
     ]
    },
    "d4pm": {
@@ -136,7 +136,7 @@
      "who": "The clues so far",
      "points": [
       "It was Mrs. Peacock, Colonel Mustard, Professor Plum or Ms. White.",
-      "It happened on the playground.",
+      "It happened in the garden.",
       "The object was the teapot or the shovel. Today's clue tells you which.",
       "Think back: notes about a special project, muddy footprints, a sweet smell, a clank, a scream, running footsteps, and a very annoyed Colonel Mustard."
      ]
@@ -144,7 +144,7 @@
    },
    "d5fin": {
     "title": "Case closed",
-    "body": "First the principal announced a grand theory about Colonel Mustard, a plate of sausages and a pot of French mustard. Wadsworth said it was wrong in every possible way.\n\nThen Wadsworth finally told us what he saw. He looked out at the playground and saw Ms. White, muddy and flustered, digging with a shovel and muttering that once she found it, the whole school would get what was coming to them. A moment later, Professor Plum ran down the hallway, spat something out a window and screamed.\n\nMs. White explained everything. Years ago she buried her Nana's secret recipe box on the playground, but nobody made a map. She has been coming in at night to dig for it so she could make treats for the whole school. Without the recipes she was guessing, and Professor Plum tasted one of her mistakes: warm apple cider made with apple cider vinegar. The clank was her shovel finally hitting the recipe tin. Colonel Mustard was annoyed because she left sweets on his desk while he was cutting back on sugar. And all those prize treats this week? Practice batches.\n\nThe singing teapot in this morning's clue crossed the teapot off the list.",
+    "body": "First the principal announced a grand theory about Colonel Mustard, a plate of sausages and a pot of French mustard. Wadsworth said it was wrong in every possible way.\n\nThen Wadsworth finally told us what he saw. He looked out at the school garden and saw Ms. White, muddy and flustered, digging with a shovel and muttering that once she found it, the whole school would get what was coming to them. A moment later, Professor Plum ran down the hallway, spat something out a window and screamed.\n\nMs. White explained everything. Years ago she buried her Nana's secret recipe box in the school garden, but nobody made a map. She has been coming in at night to dig for it so she could make treats for the whole school. Without the recipes she was guessing, and Professor Plum tasted one of her mistakes: warm apple cider made with apple cider vinegar. The clank was her shovel finally hitting the recipe tin. Colonel Mustard was annoyed because she left sweets on his desk while he was cutting back on sugar. And all those prize treats this week? Practice batches.\n\nThe singing teapot in this morning's clue crossed the teapot off the list.",
     "elim": [
      "teapot",
      "peacock",
@@ -153,7 +153,7 @@
     ],
     "solution": {
      "person": "white",
-     "place": "playground",
+     "place": "garden",
      "thing": "shovel"
     }
    }
@@ -176,13 +176,13 @@
   "r4": {
    "a": [
     "library",
-    "cafeteria"
+    "staffroom"
    ],
    "tb": null
   },
   "final": {
    "person": "white",
-   "place": "playground",
+   "place": "garden",
    "thing": "shovel"
   }
  }

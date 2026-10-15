@@ -1,0 +1,56 @@
+# WPS Clue
+
+The companion website for our school's Clue week, *What Did the Butler See?*
+
+- **Public site:** a radio-show masthead with a five-day broadcast dial, the evidence board, a case log of every clue and witness statement, a hall of fame, and the class answer sheet. Teachers submit answers right on the page with no account needed.
+- **Producer desk:** sign in with Google to release each broadcast after it airs, score answer sheets (closest tiebreaker sorts to the top), crown winners, play sound effects from a soundboard, and set up photos and posters.
+
+Answers and unreleased clues are never in this repo. They live in Firestore and only producers can read them.
+
+## Files
+
+| File | Goes in the repo? | What it is |
+|---|---|---|
+| `index.html` | Yes | The whole site |
+| `firestore.rules` | Yes (reference) | Security rules to paste into Firebase |
+| `.gitignore` | Yes | Keeps the case file out of the repo |
+| `clue-casefile.json` | **No** | Clue wording and the answer key. Load it from the producer desk. |
+
+## Setup (about 15 minutes)
+
+### 1. Create a Firebase project
+1. Go to [console.firebase.google.com](https://console.firebase.google.com) and add a project (for example `wps-clue`). Google Analytics is not needed.
+2. **Build > Firestore Database > Create database.** Choose production mode and a Canadian region (`northamerica-northeast1`, Montréal).
+3. **Build > Authentication > Get started > Sign-in method > Google > Enable.**
+4. **Authentication > Settings > Authorized domains > Add domain:** add your GitHub Pages domain (for example `yourname.github.io`).
+
+### 2. Paste the security rules
+**Firestore Database > Rules:** replace everything with the contents of `firestore.rules`, then **Publish**.
+
+### 3. Make yourself a producer
+**Firestore Database > Data > Start collection:**
+- Collection ID: `producers`
+- Document ID: the Google email you'll sign in with (for example `you@gmail.com`)
+- Add any field, such as `name` = your name, then Save.
+
+Add one document per extra producer (the principal, for example).
+
+### 4. Connect the site
+**Project settings (gear icon) > Your apps > Web (`</>`)**: register an app, then copy the `firebaseConfig` object. Paste it over the placeholder at the top of the `<script type="module">` in `index.html`. The web config is not a secret.
+
+### 5. Publish on GitHub Pages
+Commit `index.html`, `firestore.rules`, `README.md` and `.gitignore`. In the repo, go to **Settings > Pages**, set the source to your branch, and save.
+
+### 6. Load the case file
+Open the site, click **Producer sign-in** in the footer, and sign in. Open **Producer desk > Setup** and choose `clue-casefile.json`. Then fill in the school name, the Day 1 date and the announcement times, and add photos of your four suspects and four locations.
+
+Upload the two picture puzzles (Dobby and the crying calf) under **Picture puzzles**. They stay hidden until you release that morning's broadcast.
+
+## During the week
+- **Run of show** lists every broadcast with its scheduled time and a daily to-do list. Release each broadcast once it has aired. Anything past its time shows as **Due**.
+- **Answers and winners** sorts each day's answers, with correct answers first and the closest tiebreaker first. Click **Crown** to announce a winner on the site. Type in paper sheets here too.
+- **Soundboard**: load the sound-effect files once from your download page, then play them with keys 1 to 6. The files stay in that computer's browser.
+- On Day 3, time yourself walking 3 laps of the lobby and enter the result in **Setup > Secret settings**. That's the Day 4 tiebreaker.
+- To practise first, release a few broadcasts, then use **Rehearsal reset** at the bottom of Run of show.
+
+Answer sheets close automatically when you release that day's answers, so late entries can't come in after the reveal.

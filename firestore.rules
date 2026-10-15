@@ -1,0 +1,83 @@
+rules_version = '2';
+
+// Firestore security rules for the WPS Clue site.
+// Paste these into Firebase console > Firestore Database > Rules, then Publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A producer is a signed-in Google account whose email has a document in /producers.
+    // Add producers in the console: collection "producers", document ID = their email address.
+    function isProducer() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/producers/$(request.auth.token.email));
+    }
+
+    function released() {
+      return get(/databases/$(database)/documents/public/state).data.released;
+    }
+
+    // An answer sheet is open after its morning broadcast and before its answer is revealed.
+    function roundOpen(r) {
+      let rel = released();
+      return (r == 'r2' && ('d2am' in rel) && !('d2mid' in rel))
+          || (r == 'r3' && ('d3am' in rel) && !('d3mid' in rel))
+          || (r == 'r4' && ('d4am' in rel) && !('d4mid' in rel))
+          || (r == 'final' && ('d5am' in rel) && !('d5fin' in rel));
+    }
+
+    function shortStr(d, k, max) {
+      return !(k in d) || (d[k] is string && d[k].size() <= max);
+    }
+
+    // What a teacher may send from the public answer sheet.
+    function validSubmission() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['round', 'cls', 'a1', 'a2', 'tb', 'person', 'place', 'thing', 'story', 'src', 'at'])
+        && d.round in ['r2', 'r3', 'r4', 'final']
+        && d.cls is string && d.cls.size() > 0 && d.cls.size() <= 80
+        && d.src == 'Website'
+        && d.at == request.time
+        && shortStr(d, 'a1', 20) && shortStr(d, 'a2', 20) && shortStr(d, 'tb', 12)
+        && shortStr(d, 'person', 20) && shortStr(d, 'place', 20) && shortStr(d, 'thing', 20)
+        && shortStr(d, 'story', 4000)
+        && roundOpen(d.round);
+    }
+
+    // The public page: released clues, winners, settings. Everyone reads; producers write.
+    match /public/{docId} {
+      allow read: if true;
+      allow write: if isProducer();
+    }
+
+    // Suspect and place photos for the evidence board.
+    match /photos/{cardId} {
+      allow read: if true;
+      allow write: if isProducer();
+    }
+
+    // Picture puzzles: hidden until the producer releases that morning's broadcast.
+    match /posters/{key} {
+      allow read: if isProducer() || resource.data.released == true;
+      allow write: if isProducer();
+    }
+
+    // Answer key, unreleased clue wording, producer checklist.
+    match /secret/{docId} {
+      allow read, write: if isProducer();
+    }
+
+    // Each producer can check their own entry (the site uses this to show the producer desk).
+    match /producers/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
+      allow write: if false;
+    }
+
+    // Class answer sheets. Teachers can only add; only producers can read or change them.
+    match /subs/{subId} {
+      allow create: if isProducer() || validSubmission();
+      allow read, update, delete: if isProducer();
+    }
+  }
+}

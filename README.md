@@ -45,7 +45,7 @@ Commit `index.html`, the logo and icon files, `firestore.rules`, `README.md` and
 ### 6. Load the case file
 Open the site, click **Producer sign-in** in the footer, and sign in. Open **Producer desk > Setup** and choose `clue-casefile.json`. Then fill in the school name, the Day 1 date and the announcement times, and add photos of your four suspects and four locations.
 
-Upload the two picture puzzles (Dobby, and the staff-and-broom poster for the Staffroom) under **Picture puzzles**. They stay hidden until you release that morning's broadcast.
+Upload the two picture puzzles (the off-and-ice poster for the Office, and the staff-and-broom poster for the Staffroom) under **Picture puzzles**. They stay hidden until you release that morning's broadcast.
 
 ## During the week
 - **Run of show** lists every broadcast with its scheduled time and a daily to-do list. Release each broadcast once it has aired. Anything past its time shows as **Due**.

@@ -10,14 +10,14 @@
      "points": [
       "Wadsworth saw one adult, in one place at the school, using one object.",
       "Figure out all three and you can work out what he saw.",
-      "His list goes up tomorrow morning. Watch the lobby."
+      "His list goes up tomorrow morning. Watch the front entrance."
      ]
     }
    },
    "d2am": {
     "title": "Wadsworth's list is posted",
     "letter": true,
-    "body": "Wadsworth has posted his list in the lobby and around the school: four people, four places and four things. Three of them are what he really saw. The other nine are what he did not see.\n\nThe four people are teachers and staff from our school. Wadsworth doesn't know their real names, so he gave them nicknames.",
+    "body": "Wadsworth has posted his list by the front entrance and around the school: four people, four places and four things. Three of them are what he really saw. The other nine are what he did not see.\n\nThe four people are teachers and staff from our school. Wadsworth doesn't know their real names, so he gave them nicknames.",
     "riddles": [
      {
       "label": "Riddle No. 1",
@@ -71,10 +71,10 @@
    },
    "d3mid": {
     "title": "Both puzzles, solved",
-    "body": "The riddle: when it rains cats and dogs, you get a drench. What rhymes with drench? Wrench.\n\nThe picture puzzle showed Dobby the Elf with the words rhymes with. What rhymes with Dobby? Lobby.\n\nThat leaves five suspicious items on the list.",
+    "body": "The riddle: when it rains cats and dogs, you get a drench. What rhymes with drench? Wrench.\n\nThe picture puzzle: a light switch turned OFF, plus an ICE cube. Off + ice. Office.\n\nThat leaves five suspicious items on the list.",
     "elim": [
      "wrench",
-     "lobby"
+     "office"
     ]
    },
    "d3pm": {
@@ -169,7 +169,7 @@
   "r3": {
    "a": [
     "wrench",
-    "lobby"
+    "office"
    ],
    "tb": 2959
   },

@@ -27,6 +27,12 @@ service cloud.firestore {
           || (r == 'final' && ('d5am' in rel) && !('d5fin' in rel));
     }
 
+    // If the producer has set a class list, the class must be one of them.
+    function classListed(c) {
+      let st = get(/databases/$(database)/documents/public/state).data.settings;
+      return !('classes' in st) || st.classes.size() == 0 || c in st.classes;
+    }
+
     function shortStr(d, k, max) {
       return !(k in d) || (d[k] is string && d[k].size() <= max);
     }
@@ -42,6 +48,7 @@ service cloud.firestore {
         && shortStr(d, 'a1', 20) && shortStr(d, 'a2', 20) && shortStr(d, 'tb', 12)
         && shortStr(d, 'person', 20) && shortStr(d, 'place', 20) && shortStr(d, 'thing', 20)
         && shortStr(d, 'story', 4000)
+        && classListed(d.cls)
         && roundOpen(d.round);
     }
 

@@ -146,6 +146,13 @@ blockquote.story{margin:0;padding:14px 18px;border-left:4px solid var(--brass);b
 .vidrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .vidrow input{flex:1 1 260px}
 .mast .watch{justify-self:start;background:var(--glow);color:#241a05;border-radius:999px;padding:8px 18px;font-weight:700;text-decoration:none}
+.pv-bar{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:end;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.pv-bar .field{flex:1 1 320px}
+.pv-frame{border:3px dashed var(--brass);border-radius:16px;overflow:hidden;background:var(--bg)}
+.pv-tag{background:var(--brass);color:var(--surface);font-family:var(--mono);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;font-weight:700}
+.pv-frame .mast{padding-block:30px 28px}
+.pv-result{display:grid;gap:8px}
+.pv-result table{font-size:.9rem}
 .riddle img{border-radius:8px;max-height:520px;width:auto;justify-self:start;background:#fff}
 .points{margin:0;padding-left:20px;display:grid;gap:4px}
 .points-h{font-weight:700}
@@ -435,7 +442,7 @@ function itemCard(it, c, opts) {
   h += videoHTML(c.video);
   if (c.letter) h += letterHTML();
   (c.riddles || []).forEach(r => {
-    const img = r.posterKey && (opts.posterImg ? opts.posterImg[r.posterKey] : POSTER_IMG[r.posterKey]);
+    const img = r.posterKey && (opts.posterImg ? opts.posterImg[r.posterKey] : (PV_ON ? PV.posters[r.posterKey] : POSTER_IMG[r.posterKey]));
     h += '<figure class="riddle"><figcaption>' + esc(r.label) + '</figcaption>' + (r.text ? '<blockquote>“' + esc(r.text) + '”</blockquote>' : '') + (img ? '<img src="' + img + '" alt="' + esc(r.alt || r.label) + '">' : (r.posterKey ? '<p>Find this puzzle on the posters around the school.</p>' : '')) + '</figure>';
   });
   if (c.statement && c.statement.points && c.statement.points.length) h += '<div><p class="points-h">' + esc(c.statement.who) + '</p><ul class="points">' + c.statement.points.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul></div>';
@@ -448,7 +455,7 @@ function itemCard(it, c, opts) {
 function closedHTML() {
   const c = PUB.released.d5fin; if (!c) return '';
   const sol = c.solution || {}, f = PUB.winners.final;
-  return '<section class="band" id="closed"><div class="wrap"><div class="closed"><span class="big">Case closed</span><div class="solution"><span>' + esc(sname(sol.person)) + '</span><span>on ' + esc(sname(sol.place).replace(/^The /, 'the ')) + '</span><span>with ' + esc(sname(sol.thing).replace(/^The /, 'the ')) + '</span></div>' + paras(c.body) + (f && f.cls ? '<div><p class="points-h">Grand prize winner: ' + esc(f.cls) + '</p>' + (f.story ? '<blockquote class="story">' + esc(f.story) + '</blockquote>' : '') + '</div>' : '') + '</div></div></section>';
+  return '<section class="band" id="closed"><div class="wrap"><div class="closed"><span class="big">Case closed</span><div class="solution"><span>' + esc(sname(sol.person)) + '</span><span>in ' + esc(sname(sol.place).replace(/^The /, 'the ')) + '</span><span>with ' + esc(sname(sol.thing).replace(/^The /, 'the ')) + '</span></div>' + paras(c.body) + (f && f.cls ? '<div><p class="points-h">Grand prize winner: ' + esc(f.cls) + '</p>' + (f.story ? '<blockquote class="story">' + esc(f.story) + '</blockquote>' : '') + '</div>' : '') + '</div></div></section>';
 }
 function boardHTML() {
   if (!isRel('d2am')) return '';
@@ -551,14 +558,78 @@ async function onSubmit(form) {
 
 /* ---------- producer desk ---------- */
 function renderDesk() {
-  const tabs = [['show', 'Run of show'], ['answers', 'Answers and winners'], ['sound', 'Soundboard'], ['setup', 'Setup']];
+  const tabs = [['show', 'Run of show'], ['answers', 'Answers and winners'], ['preview', 'Preview'], ['sound', 'Soundboard'], ['setup', 'Setup']];
   $('#app').innerHTML = nav() + '<header class="desk-head"><div class="wrap"><p class="eyebrow" style="color:var(--glow)">Producer only · signed in as ' + esc(USER && USER.email) + '</p><h1>Producer desk</h1><p>Release each broadcast after it airs, score the answer sheets, play sound effects, and set up photos and posters. Answers and unreleased clues stay locked until you release them. Every open copy of the site updates the moment you do.</p><div class="tabs" role="tablist">' + tabs.map(t => '<button type="button" role="tab" aria-selected="' + (DESKTAB === t[0]) + '" data-tab="' + t[0] + '">' + t[1] + '</button>').join('') + '</div></div></header><main class="wrap panel" id="panel"></main>';
   renderPanel();
+}
+/* ---------- preview (producer only; never writes) ---------- */
+let PV_ON = false;
+const PV = { at: LS.get('wps-pv-at', ''), winners: LS.get('wps-pv-win', false), posters: {}, loaded: false };
+function pvState() {
+  const st = clone(PUB), idx = ITEMS.findIndex(i => i.id === PV.at);
+  st.released = {};
+  ITEMS.forEach((it, i) => { if (i <= idx) { const c = contentFor(it.id); c.at = new Date().toISOString(); st.released[it.id] = c; } });
+  st.winners = {};
+  if (PV.winners) {
+    const sample = (st.settings.classes && st.settings.classes[0]) || 'Room 104 · Ms. Patel';
+    RKEYS.forEach(r => { if (st.released[ROUNDS[r].closes]) st.winners[r] = r === 'final' ? { cls: sample, story: 'Ms. White was digging in the garden for a lost recipe box, so she could bake treats for the whole school!' } : { cls: sample }; });
+  }
+  return st;
+}
+function withPreview(fn) { const real = PUB; PUB = pvState(); PV_ON = true; try { return fn(); } finally { PUB = real; PV_ON = false; } }
+function loadPvPosters() {
+  if (PV.loaded) return; PV.loaded = true;
+  POSTERS.forEach(x => getDoc(doc(db, 'posters', x[0])).then(sn => { if (sn.exists() && sn.data().data) { PV.posters[x[0]] = sn.data().data; if (DESKTAB === 'preview') renderPreview(); } }).catch(() => {}));
+}
+function renderPreview() {
+  const p = $('#panel'); if (!p) return;
+  if (!SEC.loaded) { p.innerHTML = '<p class="muted">Opening the secret case file…</p>'; return; }
+  if (!SEC.content) { p.innerHTML = '<div class="box"><h3>Load the case file first</h3><p>Go to <b>Setup</b> and load <code>clue-casefile.json</code>.</p></div>'; return; }
+  loadPvPosters();
+  if (PV.at && !ITEMS.some(i => i.id === PV.at)) PV.at = '';
+  const opts = '<option value=""' + (PV.at ? '' : ' selected') + '>Before Day 1 (nothing released yet)</option>' + [1, 2, 3, 4, 5].map(d => '<optgroup label="Day ' + d + ' · ' + esc(fmtDay(dayDate(d))) + '">' + ITEMS.filter(i => i.day === d).map(i => '<option value="' + i.id + '"' + (i.id === PV.at ? ' selected' : '') + '>After ' + esc(SLOTNAME[i.slot].toLowerCase()) + ': ' + esc(i.label) + (isRel(i.id) ? ' (live now)' : '') + '</option>').join('') + '</optgroup>').join('');
+  const body = withPreview(() => mastHTML() + closedHTML() + boardHTML() + logHTML() + hallHTML() + sheetHTML());
+  p.innerHTML = '<div class="pv-bar"><div class="field"><label for="pv-at">Show the public site as it will look</label><select id="pv-at" data-pvat="1">' + opts + '</select></div>'
+    + '<label class="check"><input type="checkbox" id="pv-win" data-pvwin="1"' + (PV.winners ? ' checked' : '') + '><span>Show sample winners</span></label>'
+    + '<button class="btn sm ghost" type="button" data-pvstep="-1">◀ Back one</button><button class="btn sm ghost" type="button" data-pvstep="1">Forward one ▶</button></div>'
+    + '<p class="muted">Only you can see this. It uses your unreleased clues, puzzles, videos and secret tiebreaker numbers. Nothing here is published, and test answers are never saved.</p>'
+    + '<div class="pv-frame"><div class="pv-tag">Preview · not live</div>' + body + '</div>';
+  const f = p.querySelector('#subform');
+  if (f) { f.id = 'pvform'; const btn = f.querySelector('#f-submit'); if (btn) btn.textContent = 'Test submit (nothing is sent)'; const sr = f.querySelector('#sendres'); if (sr) sr.innerHTML = ''; }
+}
+function pvCheck(e, st) {
+  const errs = [], R = ROUNDS[e.round];
+  if (!e.cls) errs.push('Choose a class.');
+  if (st.settings.classes && st.settings.classes.length && e.cls && st.settings.classes.indexOf(e.cls) < 0) errs.push('That class isn’t on your class list, so the database would refuse it.');
+  if (!(R.opens in st.released) || (R.closes in st.released)) errs.push('This answer sheet would be closed at this point in the week.');
+  if (R.final) { if (!e.person || !e.place || !e.thing) errs.push('Pick a person, a place and a thing.'); }
+  else { R.fields.forEach(f => { if (!e[f[0]]) errs.push('Answer “' + f[1] + '”.'); }); if (e.tb === '' || isNaN(Number(e.tb))) errs.push('Enter a tiebreaker number.'); }
+  return errs;
+}
+function pvSubmit(form) {
+  const r = form.getAttribute('data-sheetround'), R = ROUNDS[r];
+  const e = { round: r, cls: $('#f-cls').value.trim().slice(0, 80) };
+  if (R.final) { e.person = $('#f-person').value; e.place = $('#f-place').value; e.thing = $('#f-thing').value; e.story = $('#f-story').value.trim().slice(0, 3000); }
+  else { R.fields.forEach(f => { e[f[0]] = $('#f-' + f[0]).value; }); e.tb = String($('#f-tb').value).slice(0, 12); }
+  const st = pvState(), errs = pvCheck(e, st), out = $('#sendres');
+  if (errs.length) { out.innerHTML = '<div class="due-banner" style="display:block"><b>A teacher would see a problem here:</b><ul class="points">' + errs.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>'; return; }
+  const A = SEC.answers && SEC.answers[r];
+  let ok, extra = '';
+  if (R.final) { const f = A || {}; ok = e.person === f.person && e.place === f.place && e.thing === f.thing; }
+  else {
+    const want = ((A && A.a) || []).slice().sort().join(','), got = [e.a1, e.a2].filter(Boolean).sort().join(',');
+    ok = !!want && want === got;
+    extra = (A && A.tb != null && A.tb !== '') ? '<tr><th>Tiebreaker</th><td>' + esc(e.tb) + ' (your secret number is ' + esc(A.tb) + ', so off by ' + Math.abs(Number(e.tb) - Number(A.tb)) + ')</td></tr>' : '<tr><th>Tiebreaker</th><td>' + esc(e.tb) + ' (you haven’t set the secret number yet: Setup › Secret settings)</td></tr>';
+  }
+  const ans = R.final ? [e.person, e.place, e.thing].map(sname).join(', ') : [e.a1, e.a2].filter(Boolean).map(sname).join(' and ');
+  out.innerHTML = '<div class="pv-result"><p class="ok-note">Test only. A teacher would see: “Got it! ' + esc(e.cls) + ' answered ' + esc(ans) + (R.final ? '' : ' (tiebreaker ' + esc(e.tb) + ')') + '.” Nothing was sent.</p>'
+    + '<div class="tablewrap"><table><tbody><tr><th>Class</th><td>' + esc(e.cls) + '</td></tr><tr><th>Answer</th><td>' + esc(ans) + '</td></tr>' + extra + (R.final && e.story ? '<tr><th>Story</th><td style="white-space:pre-wrap">' + esc(e.story) + '</td></tr>' : '') + '<tr><th>Would score as</th><td class="' + (ok ? 'yes' : 'no') + '">' + (ok ? 'Correct' : 'Not correct') + '</td></tr></tbody></table></div></div>';
 }
 function renderPanel() {
   const p = $('#panel'); if (!p) return;
   if (DESKTAB === 'show') p.innerHTML = showHTML();
   else if (DESKTAB === 'answers') p.innerHTML = answersHTML();
+  else if (DESKTAB === 'preview') renderPreview();
   else if (DESKTAB === 'sound') { p.innerHTML = soundHTML(); loadPads(); }
   else { p.innerHTML = setupHTML(); loadPosterThumbs(); }
 }
@@ -693,9 +764,13 @@ async function cropSquare(file, size) { const img = await loadImg(file); const w
 
 /* ---------- events ---------- */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-jump],[data-go],[data-note],[data-clearnotes],[data-signin],[data-tab],[data-release],[data-unrelease],[data-preview],[data-edit],[data-saveedit],[data-canceledit],[data-rtab],[data-crown],[data-uncrown],[data-delsub],[data-play],[data-stopall],[data-unload],[data-clearphoto],[data-savelap],[data-savevid],[data-reset]');
+  const t = ev.target.closest('[data-pvstep],[data-jump],[data-go],[data-note],[data-clearnotes],[data-signin],[data-tab],[data-release],[data-unrelease],[data-preview],[data-edit],[data-saveedit],[data-canceledit],[data-rtab],[data-crown],[data-uncrown],[data-delsub],[data-play],[data-stopall],[data-unload],[data-clearphoto],[data-savelap],[data-savevid],[data-reset]');
   if (!t) return;
   const a = t.dataset;
+  if (a.pvstep) {
+    const ids = [''].concat(ITEMS.map(i => i.id)); let k = ids.indexOf(PV.at) + Number(a.pvstep);
+    k = Math.max(0, Math.min(ids.length - 1, k)); PV.at = ids[k]; LS.set('wps-pv-at', PV.at); renderPreview(); return;
+  }
   if (a.jump) {
     ev.preventDefault();
     const el = document.getElementById(a.jump);
@@ -707,6 +782,7 @@ document.addEventListener('click', ev => {
     VIEW = a.go === 'desk' && CAN_EDIT ? 'desk' : 'public';
     history.replaceState(null, '', VIEW === 'desk' ? '#desk' : '#top'); render(); scrollTo(0, 0); return;
   }
+  if (a.note && VIEW === 'desk') { const cur = NOTES[a.note]; if (!cur) NOTES[a.note] = 'sus'; else if (cur === 'sus') NOTES[a.note] = 'out'; else delete NOTES[a.note]; LS.set('wps-notes', NOTES); renderPreview(); return; }
   if (a.note) { const cur = NOTES[a.note]; if (!cur) NOTES[a.note] = 'sus'; else if (cur === 'sus') NOTES[a.note] = 'out'; else delete NOTES[a.note]; LS.set('wps-notes', NOTES); const y = scrollY; renderTop(); scrollTo(0, y); const b = $('[data-note="' + a.note + '"]'); if (b) b.focus({ preventScroll: true }); return; }
   if (a.clearnotes) { NOTES = {}; LS.set('wps-notes', NOTES); const y = scrollY; renderTop(); scrollTo(0, y); return; }
   if (a.signin) {
@@ -764,6 +840,8 @@ async function doReset(alsoSubs) {
 function selectAll(el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 document.addEventListener('change', ev => {
   const t = ev.target, a = t.dataset || {};
+  if (a.pvat) { PV.at = t.value; LS.set('wps-pv-at', PV.at); renderPreview(); return; }
+  if (a.pvwin) { PV.winners = t.checked; LS.set('wps-pv-win', PV.winners); renderPreview(); return; }
   if (a.check) { const done = clone(SEC.check.done || {}); if (t.checked) done[a.check] = true; else delete done[a.check]; SEC.check = { done }; setDoc(doc(db, 'secret', 'checklist'), { done }).catch(() => toast('Couldn’t save the checklist.')); return; }
   if (a.load && t.files && t.files[0]) { const f = t.files[0]; idbPut(a.load, { name: f.name, blob: f }).then(loadPads, () => toast('This browser wouldn’t store the file.')); return; }
   if (a.photo && t.files && t.files[0]) { cropSquare(t.files[0], 360).then(d => { PEND[a.photo] = d; $('#php-' + a.photo).innerHTML = '<img src="' + d + '" alt="">'; toast('Photo ready. Press Save to show it.'); }, e => toast(e.message)); return; }
@@ -791,6 +869,7 @@ async function loadCaseFile(file) {
 }
 document.addEventListener('submit', ev => {
   const f = ev.target; ev.preventDefault();
+  if (f.id === 'pvform') { pvSubmit(f); return; }
   if (f.id === 'subform') { onSubmit(f); return; }
   if (f.id === 'paperform') {
     const r = ROUNDTAB, R = ROUNDS[r], e = { round: r, cls: $('#pp-cls').value.trim(), src: 'Office', at: serverTimestamp() };

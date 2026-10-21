@@ -50,8 +50,9 @@ Upload the two picture puzzles (the off-and-ice poster for the Office, and the s
 ## During the week
 - **Run of show** lists every broadcast with its scheduled time and a daily to-do list. Release each broadcast once it has aired. Anything past its time shows as **Due**.
 - **Answers and winners** sorts each day's answers, with correct answers first and the closest tiebreaker first. Click **Crown** to announce a winner on the site. Type in paper sheets here too.
+- **Episode videos**: upload each recording to Google Drive, share it as "anyone in Durham DSB with the link can view", and paste the link into that broadcast's box in **Run of show**. The video stays hidden until you release the broadcast, then plays right in the case log. YouTube (unlisted) links work too.
 - **Soundboard**: load the sound-effect files once from your download page, then play them with keys 1 to 6. The files stay in that computer's browser.
-- On Day 3, time yourself walking 3 laps of the lobby and enter the result in **Setup > Secret settings**. That's the Day 4 tiebreaker.
+- Tiebreakers are secret numbers only you know. Enter them in **Setup > Secret settings**: make up the Day 2 teacup seconds, count your steps from the front doors to the library for Day 3, and on Day 3 time 3 laps of the front foyer for Day 4. Any correct class can be crowned, so you can spread the wins around.
 - To practise first, release a few broadcasts, then use **Rehearsal reset** at the bottom of Run of show.
 
 Answer sheets close automatically when you release that day's answers, so late entries can't come in after the reveal.

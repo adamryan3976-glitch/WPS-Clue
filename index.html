@@ -86,7 +86,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 .needle{position:absolute;top:-6px;width:2px;height:34px;background:#ff4d3d;box-shadow:0 0 8px #ff4d3d;transition:left .6s ease}
 
 /* sections */
-section.band{padding-block:44px}
+section.band{padding-block:44px;scroll-margin-top:calc(64px + env(safe-area-inset-top,0px))}
+@keyframes flash{0%{background:var(--brass-soft)}100%{background:transparent}}
+section.band.flash{animation:flash 1.6s ease-out}
+.opens{font-size:1.15rem}
+.opens b{color:var(--brass)}
 section.band + section.band{border-top:1px solid var(--line)}
 .sec-head{display:flex;justify-content:space-between;gap:12px 20px;align-items:end;flex-wrap:wrap;margin-bottom:20px}
 .sec-head p{max-width:60ch}
@@ -387,7 +391,7 @@ let NOTES = LS.get('wps-notes', {});
 function nav() {
   const links = VIEW === 'desk'
     ? '<a class="l" href="#top" data-go="public">Back to the case file</a>'
-    : '<a class="l" href="#board">Evidence</a><a class="l" href="#log">Case log</a><a class="l" href="#sheet">Answer sheet</a>';
+    : (isRel('d2am') ? '<a class="l" href="#board" data-jump="board">Evidence</a>' : '') + '<a class="l" href="#log" data-jump="log">Case log</a><a class="l" href="#sheet" data-jump="sheet">Answer sheet</a>';
   return '<nav class="nav" aria-label="Site"><div class="wrap"><a class="brand" href="#top" data-go="public"><img src="apple-touch-icon.png" alt="" width="28" height="28">' + esc(PUB.settings.school || 'Our School') + ' Clue</a>' + links + (CAN_EDIT && VIEW !== 'desk' ? '<button class="desk-btn" type="button" data-go="desk">Producer desk</button>' : '') + '</div></nav>';
 }
 function dialHTML() {
@@ -490,10 +494,12 @@ function optList(group, sel) {
 }
 function sheetHTML() {
   const open = RKEYS.filter(roundOpen);
-  let h = '<section class="band" id="sheet"><div class="wrap"><div class="sec-head"><div><p class="eyebrow muted">For teachers</p><h2>Class answer sheet</h2></div><p class="muted">Agree on one answer as a class, then send it in here. A paper sheet in the office works too.</p></div>';
+  let h = '<section class="band" id="sheet"><div class="wrap"><div class="sec-head"><div><p class="eyebrow muted">For teachers</p><h2>Class answer sheet</h2></div><p class="muted">Agree on one answer as a class, then send it in here. Every class submits on this page.</p></div>';
   if (!open.length) {
     const nx = RKEYS.find(r => !isRel(ROUNDS[r].opens));
-    h += '<div class="sheet"><p><b>No answer sheet is open right now.</b></p><p class="muted">' + (nx ? 'The next one opens with the morning announcements on Day ' + ROUNDS[nx].day + ' (' + esc(fmtDay(dayDate(ROUNDS[nx].day))) + ').' : 'All answers are in. Thanks for playing!') + '</p></div>';
+    let msg = 'All answers are in. Thanks for playing!';
+    if (nx) { const it = ITEMS.find(i => i.id === ROUNDS[nx].opens); msg = 'The <b>' + esc(ROUNDS[nx].label) + '</b> answer sheet opens right here with the morning announcements on <b>' + esc(fmtDay(itemTime(it))) + '</b>, around <b>' + esc(fmtTime(itemTime(it)).replace(/\.$/, '')) + '</b>.'; }
+    h += '<div class="sheet"><p><b>' + (RKEYS.some(k => isRel(ROUNDS[k].closes)) ? 'Today\u2019s answer sheet has closed. Thanks for playing!' : 'The answer sheet isn\u2019t open yet.') + '</b></p><p class="opens">' + msg + '</p><p class="muted">' + (nx ? 'You don\u2019t need to refresh. This page updates by itself the moment it opens. Answers are due by ' + esc(ROUNDS[nx].due) + ' that day.' : '') + '</p></div>';
     return h + '</div></section>';
   }
   const r = open[open.length - 1], R = ROUNDS[r], cls = LS.get('wps-cls', ''), mine = LS.get('wps-sent', {})[r];
@@ -537,9 +543,9 @@ async function onSubmit(form) {
   try {
     await addDoc(collection(db, 'subs'), Object.assign({}, e, { at: serverTimestamp() }));
     const sent = LS.get('wps-sent', {}); sent[r] = e; LS.set('wps-sent', sent);
-    $('#sendres').innerHTML = '<p class="ok-note">Got it. The office has ' + esc(e.cls) + '’s answer. You can change it any time before the deadline.</p>';
+    $('#sendres').innerHTML = '<p class="ok-note">Got it! ' + esc(e.cls) + ' answered ' + esc(R.final ? [e.person, e.place, e.thing].map(sname).join(', ') : [e.a1, e.a2].filter(Boolean).map(sname).join(' and ') + ' (tiebreaker ' + e.tb + ')') + '. You can change it any time before the deadline by submitting again.</p>';
   } catch (err) {
-    $('#sendres').innerHTML = '<p class="due-banner" style="display:block">' + (err && err.code === 'permission-denied' ? 'The answer wasn\u2019t sent. Either this answer sheet has closed, or the class list just changed; reload the page and try again.' : 'The answer didn’t send. Check the internet connection and try again, or hand a paper sheet to the office.') + '</p>';
+    $('#sendres').innerHTML = '<p class="due-banner" style="display:block">' + (err && err.code === 'permission-denied' ? 'The answer wasn\u2019t sent. Either this answer sheet has closed, or the class list just changed; reload the page and try again.' : 'The answer didn\u2019t send. Check the internet connection and try again. If it still won\u2019t send, email the office before the deadline.') + '</p>';
   } finally { btn.disabled = false; }
 }
 
@@ -631,7 +637,7 @@ function answersHTML() {
   if (!R.final) h += '<p class="muted">Correct answer: <b>' + esc(((A && A.a) || []).map(sname).join(' and ') || 'not set') + '</b> · Tiebreaker: <b class="tabnum">' + esc(A && A.tb != null && A.tb !== '' ? A.tb : 'not set yet') + '</b>' + (!(A && A.tb != null && A.tb !== '') ? ' (enter it in Setup > Secret settings)' : '') + '. Correct answers sort to the top, closest tiebreaker first. You can crown any correct class, so feel free to spread the wins around. If a class sent more than once, only its latest answer counts.</p>';
   else h += '<p class="muted">Correct trio: <b>' + esc(A ? [A.person, A.place, A.thing].map(sname).join(', ') : 'not set') + '</b>. Read the stories and feature the best one; it appears on the public site once you release “Case closed”.</p>';
   h += '</div>';
-  if (!rows.length) h += '<p class="muted">No answers yet. Teachers submit from the answer sheet on the public site, and you can type in paper sheets below.</p>';
+  if (!rows.length) h += '<p class="muted">No answers yet. Teachers submit from the answer sheet on the public site.</p>';
   else {
     h += '<div class="tablewrap"><table><thead><tr><th>Class</th>' + (R.final ? '<th>Who, where, what</th><th>Story</th>' : '<th>Answer</th><th class="num">Tiebreaker</th><th class="num">Off by</th>') + '<th>Right?</th><th>From</th><th></th></tr></thead><tbody>';
     rows.forEach(x => {
@@ -640,7 +646,7 @@ function answersHTML() {
     });
     h += '</tbody></table></div>';
   }
-  h += '<form class="box" id="paperform"><h3>Type in a paper sheet</h3><div class="field"><label for="pp-cls">Class</label>' + classField('pp-cls', '', false) + '</div>' + (R.final ? '<div class="row2"><div class="field"><label for="pp-person">Who</label><select id="pp-person">' + optList('person') + '</select></div><div class="field"><label for="pp-place">Where</label><select id="pp-place">' + optList('place') + '</select></div><div class="field"><label for="pp-thing">With what</label><select id="pp-thing">' + optList('thing') + '</select></div></div><div class="field"><label for="pp-story">Story</label><textarea id="pp-story"></textarea></div>' : '<div class="row2">' + R.fields.map(f => '<div class="field"><label for="pp-' + f[0] + '">' + esc(f[1]) + '</label><select id="pp-' + f[0] + '">' + optList() + '</select></div>').join('') + '<div class="field"><label for="pp-tb">Tiebreaker</label><input type="number" id="pp-tb"></div></div>') + '<button class="btn sm" type="submit">Add sheet</button></form>';
+  h += '<form class="box" id="paperform"><h3>Add an answer for a class</h3><p class="muted">A backup for a class that couldn\u2019t get online.</p><div class="field"><label for="pp-cls">Class</label>' + classField('pp-cls', '', false) + '</div>' + (R.final ? '<div class="row2"><div class="field"><label for="pp-person">Who</label><select id="pp-person">' + optList('person') + '</select></div><div class="field"><label for="pp-place">Where</label><select id="pp-place">' + optList('place') + '</select></div><div class="field"><label for="pp-thing">With what</label><select id="pp-thing">' + optList('thing') + '</select></div></div><div class="field"><label for="pp-story">Story</label><textarea id="pp-story"></textarea></div>' : '<div class="row2">' + R.fields.map(f => '<div class="field"><label for="pp-' + f[0] + '">' + esc(f[1]) + '</label><select id="pp-' + f[0] + '">' + optList() + '</select></div>').join('') + '<div class="field"><label for="pp-tb">Tiebreaker</label><input type="number" id="pp-tb"></div></div>') + '<button class="btn sm" type="submit">Add sheet</button></form>';
   return h;
 }
 
@@ -687,9 +693,15 @@ async function cropSquare(file, size) { const img = await loadImg(file); const w
 
 /* ---------- events ---------- */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-go],[data-note],[data-clearnotes],[data-signin],[data-tab],[data-release],[data-unrelease],[data-preview],[data-edit],[data-saveedit],[data-canceledit],[data-rtab],[data-crown],[data-uncrown],[data-delsub],[data-play],[data-stopall],[data-unload],[data-clearphoto],[data-savelap],[data-savevid],[data-reset]');
+  const t = ev.target.closest('[data-jump],[data-go],[data-note],[data-clearnotes],[data-signin],[data-tab],[data-release],[data-unrelease],[data-preview],[data-edit],[data-saveedit],[data-canceledit],[data-rtab],[data-crown],[data-uncrown],[data-delsub],[data-play],[data-stopall],[data-unload],[data-clearphoto],[data-savelap],[data-savevid],[data-reset]');
   if (!t) return;
   const a = t.dataset;
+  if (a.jump) {
+    ev.preventDefault();
+    const el = document.getElementById(a.jump);
+    if (el) { try { history.replaceState(null, '', '#' + a.jump); } catch (x) {} el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+    return;
+  }
   if (a.go) {
     ev.preventDefault();
     VIEW = a.go === 'desk' && CAN_EDIT ? 'desk' : 'public';
@@ -781,11 +793,11 @@ document.addEventListener('submit', ev => {
   const f = ev.target; ev.preventDefault();
   if (f.id === 'subform') { onSubmit(f); return; }
   if (f.id === 'paperform') {
-    const r = ROUNDTAB, R = ROUNDS[r], e = { round: r, cls: $('#pp-cls').value.trim(), src: 'Paper', at: serverTimestamp() };
+    const r = ROUNDTAB, R = ROUNDS[r], e = { round: r, cls: $('#pp-cls').value.trim(), src: 'Office', at: serverTimestamp() };
     if (!e.cls) return;
     if (R.final) { e.person = $('#pp-person').value; e.place = $('#pp-place').value; e.thing = $('#pp-thing').value; e.story = $('#pp-story').value.trim(); }
     else { R.fields.forEach(x => { e[x[0]] = $('#pp-' + x[0]).value; }); e.tb = String($('#pp-tb').value); }
-    addDoc(collection(db, 'subs'), e).then(() => toast('Sheet added.'), err => toast('Couldn’t add it: ' + (err.code || err.message)));
+    addDoc(collection(db, 'subs'), e).then(() => toast('Answer added.'), err => toast('Couldn’t add it: ' + (err.code || err.message)));
     return;
   }
   if (f.id === 'setupform') { saveSetup(); }
@@ -848,8 +860,10 @@ function stopDesk() { DESK_UNSUBS.forEach(u => { try { u(); } catch (e) {} }); D
 render();
 if (CONFIGURED) {
   onSnapshot(doc(db, 'public', 'state'), s => {
+    const first = !PUB_LOADED;
     PUB = normalize(s.exists() ? s.data() : null); PUB_LOADED = true;
     refreshAfterPubChange();
+    if (first && VIEW === 'public' && /^#(sheet|log|board)$/.test(location.hash)) { const el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView({ block: 'start' }); }
   }, () => { PUB_LOADED = true; refreshAfterPubChange(); });
   onSnapshot(collection(db, 'photos'), q => {
     PHOTOS = {}; q.forEach(d => { PHOTOS[d.id] = d.data().data; });

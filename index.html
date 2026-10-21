@@ -136,6 +136,12 @@ blockquote.story{margin:0;padding:14px 18px;border-left:4px solid var(--brass);b
 .riddle{margin:0;background:var(--brass-soft);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
 .riddle figcaption{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--brass);font-weight:700}
 .riddle blockquote{margin:0;font-size:1.2rem;font-weight:600;line-height:1.4}
+.vidwrap{display:grid;gap:6px}
+.vidwrap iframe{width:100%;aspect-ratio:16/9;max-width:100%;border:0;border-radius:10px;background:#000}
+.vidwrap a{font-size:.9rem}
+.vidrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vidrow input{flex:1 1 260px}
+.mast .watch{justify-self:start;background:var(--glow);color:#241a05;border-radius:999px;padding:8px 18px;font-weight:700;text-decoration:none}
 .riddle img{border-radius:8px;max-height:520px;width:auto;justify-self:start;background:#fff}
 .points{margin:0;padding-left:20px;display:grid;gap:4px}
 .points-h{font-weight:700}
@@ -401,13 +407,28 @@ function mastHTML() {
     : closed ? 'The case is closed. Thank you, detectives. Scroll down to see what Wadsworth really saw.'
       : 'Wadsworth, the school’s nighttime butler, saw something concerning late one night. The Butler’s Code won’t let him say what. Solve his puzzles with your class to cross suspects off the list.';
   const next = nx ? '<p class="next"><span>Next broadcast</span><b>Day ' + nx.day + ' · ' + esc(fmtDay(itemTime(nx))) + ' · ' + esc(fmtTime(itemTime(nx))) + '</b><span>' + esc(nx.label) + '</span></p>' : '';
-  return '<header class="mast" id="top"><div class="wrap"><div class="mast-grid"><img class="mast-logo" src="logo.jpg" width="640" height="708" alt="Winchester Clue: Decode. Solve. Uncover. A knight holding a magnifying glass."><div class="mast-copy"><p class="eyebrow onair"><i aria-hidden="true"></i>On air · ' + esc(PUB.settings.school || 'Our School') + ' Radio Theatre presents</p><h1>What did the <em>butler</em> see?</h1><p class="lede">' + lede + '</p>' + next + '</div></div>' + dialHTML() + '</div></header>';
+  return '<header class="mast" id="top"><div class="wrap"><div class="mast-grid"><img class="mast-logo" src="logo.jpg" width="640" height="708" alt="Winchester Clue: Decode. Solve. Uncover. A knight holding a magnifying glass."><div class="mast-copy"><p class="eyebrow onair"><i aria-hidden="true"></i>On air · ' + esc(PUB.settings.school || 'Our School') + ' Radio Theatre presents</p><h1>What did the <em>butler</em> see?</h1><p class="lede">' + lede + '</p>' + next + (latestVideoId() ? '<a class="watch" href="#e-' + latestVideoId() + '">\u25B6 Watch the latest episode</a>' : '') + '</div></div>' + dialHTML() + '</div></header>';
 }
 function paras(t) { return String(t || '').split(/\n\s*\n/).filter(x => x.trim()).map(x => '<p>' + esc(x.trim()) + '</p>').join(''); }
 function letterHTML() { return '<div class="letter"><p>Ladies and gentlemen,</p><p>Here is a carefully prepared list of persons, places and objects. Hidden among them are the three things I truly saw on that unfortunate night.</p><p>Over the coming days I shall give you puzzles and riddles. Each one you solve removes an item from the list. Solve them all and only three will remain. Those three will lead you to what happened that evening.</p><p>I wish you the very best of luck.</p><p class="sig">Yours faithfully,<br>Wadsworth the Butler</p></div>'; }
+function videoEmbed(url) {
+  if (!url) return null;
+  let m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{10,})/);
+  if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
+  m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/))([\w-]{11})/);
+  if (m) return 'https://www.youtube-nocookie.com/embed/' + m[1] + '?rel=0';
+  return null;
+}
+function videoHTML(url) {
+  if (!url || !/^https:\/\//.test(url)) return '';
+  const e = videoEmbed(url);
+  return '<div class="vidwrap">' + (e ? '<iframe src="' + esc(e) + '" title="Episode video" allow="autoplay; fullscreen; encrypted-media" allowfullscreen loading="lazy"></iframe>' : '') + '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + (e ? 'Open the video in a new tab (for full screen)' : 'Watch this episode') + '</a></div>';
+}
+function latestVideoId() { let id = null; ITEMS.forEach(it => { const c = PUB.released[it.id]; if (c && c.video) id = it.id; }); return id; }
 function itemCard(it, c, opts) {
   opts = opts || {};
   let h = '<article class="entry" id="e-' + it.id + '"><div class="when">' + esc(SLOTNAME[it.slot]) + ' · ' + esc(fmtDay(itemTime(it))) + '</div><h3>' + esc(c.title) + '</h3>' + paras(c.body);
+  h += videoHTML(c.video);
   if (c.letter) h += letterHTML();
   (c.riddles || []).forEach(r => {
     const img = r.posterKey && (opts.posterImg ? opts.posterImg[r.posterKey] : POSTER_IMG[r.posterKey]);
@@ -548,7 +569,7 @@ function showHTML() {
     h += '<section class="day-block" aria-label="Day ' + d + '"><header><h3>Day ' + d + '</h3><span class="muted">' + esc(fmtDay(dd)) + '</span>' + (sameDay(dd, today) ? '<span class="today">TODAY</span>' : '') + '</header><div class="day-body"><div class="rel-list"><h4>Broadcasts</h4>';
     its.forEach(it => {
       const st = statusOf(it);
-      h += '<div class="rel"><div class="rel-top"><span class="t tabnum">' + esc(fmtTime(itemTime(it))) + '</span><span class="lab">' + esc(it.label) + '</span><span class="pill ' + st + '">' + (st === 'live' ? 'Released' : st === 'due' ? 'Due' : 'Scheduled') + '</span></div><div class="btnrow">' + (st === 'live' ? '<button class="btn sm ghost" type="button" data-unrelease="' + it.id + '">Take down</button>' : '<button class="btn sm" type="button" data-release="' + it.id + '">Release now</button>') + '<button class="btn sm ghost" type="button" data-preview="' + it.id + '">Preview</button><button class="btn sm ghost" type="button" data-edit="' + it.id + '">Edit wording</button></div><div id="pv-' + it.id + '"></div></div>';
+      h += '<div class="rel"><div class="rel-top"><span class="t tabnum">' + esc(fmtTime(itemTime(it))) + '</span><span class="lab">' + esc(it.label) + '</span><span class="pill ' + st + '">' + (st === 'live' ? 'Released' : st === 'due' ? 'Due' : 'Scheduled') + '</span></div><div class="btnrow">' + (st === 'live' ? '<button class="btn sm ghost" type="button" data-unrelease="' + it.id + '">Take down</button>' : '<button class="btn sm" type="button" data-release="' + it.id + '">Release now</button>') + '<button class="btn sm ghost" type="button" data-preview="' + it.id + '">Preview</button><button class="btn sm ghost" type="button" data-edit="' + it.id + '">Edit wording</button></div><div class="vidrow"><input type="url" id="vid-' + it.id + '" aria-label="Video link for ' + esc(it.label) + '" placeholder="Paste the Google Drive or YouTube link to this episode" value="' + esc((SEC.content.items[it.id] || {}).video || '') + '"><button class="btn sm ghost" type="button" data-savevid="' + it.id + '">Save video link</button></div><div id="pv-' + it.id + '"></div></div>';
     });
     h += '</div><div class="check-list"><h4>To do</h4>' + (CHECK[d] || []).map((t, i) => { const k = d + '-' + i; return '<label class="check"><input type="checkbox" id="ck-' + k + '" data-check="' + k + '"' + (done[k] ? ' checked' : '') + '><span>' + esc(t) + '</span></label>'; }).join('') + '</div></div></section>';
   }
@@ -666,7 +687,7 @@ async function cropSquare(file, size) { const img = await loadImg(file); const w
 
 /* ---------- events ---------- */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-go],[data-note],[data-clearnotes],[data-signin],[data-tab],[data-release],[data-unrelease],[data-preview],[data-edit],[data-saveedit],[data-canceledit],[data-rtab],[data-crown],[data-uncrown],[data-delsub],[data-play],[data-stopall],[data-unload],[data-clearphoto],[data-savelap],[data-reset]');
+  const t = ev.target.closest('[data-go],[data-note],[data-clearnotes],[data-signin],[data-tab],[data-release],[data-unrelease],[data-preview],[data-edit],[data-saveedit],[data-canceledit],[data-rtab],[data-crown],[data-uncrown],[data-delsub],[data-play],[data-stopall],[data-unload],[data-clearphoto],[data-savelap],[data-savevid],[data-reset]');
   if (!t) return;
   const a = t.dataset;
   if (a.go) {
@@ -698,6 +719,17 @@ document.addEventListener('click', ev => {
   if (a.unload) { idbDel(a.unload).then(loadPads); return; }
   if (a.clearphoto) { PEND[a.clearphoto] = null; $('#php-' + a.clearphoto).innerHTML = iconFor(sus(a.clearphoto)); t.remove(); return; }
   if (a.savelap) { const upd = {}; ['r2', 'r3', 'r4'].forEach(k => { const v = $('#s-tb-' + k).value; upd[k + '.tb'] = v === '' ? null : Number(v); }); updateDoc(doc(db, 'secret', 'answers'), upd).then(() => toast('Tiebreaker answers saved.'), e => toast('Couldn\u2019t save: ' + (e.code || e.message))); return; }
+  if (a.savevid) {
+    const id = a.savevid, v = $('#vid-' + id).value.trim();
+    if (v && !/^https:\/\//.test(v)) { toast('Paste the full link, starting with https://'); return; }
+    if (v && !videoEmbed(v)) toast('Saved. That link isn\u2019t Google Drive or YouTube, so teachers will get a link instead of a player.', 6000);
+    const upd = {}; upd['items.' + id + '.video'] = v || deleteField();
+    updateDoc(doc(db, 'secret', 'content'), upd).then(() => {
+      if (isRel(id)) { const pu = {}; pu['released.' + id + '.video'] = v || deleteField(); return pubUpdate(pu, 'Video link saved and shown on the public site.'); }
+      toast('Video link saved. It appears on the public site when you release this broadcast.');
+    }, e => toast('Couldn\u2019t save: ' + (e.code || e.message)));
+    return;
+  }
   if (a.reset) {
     if (a.reset === 'ask') { $('#resetrow').innerHTML = '<span>Take everything off the public site?</span><button class="btn sm danger" type="button" data-reset="yes">Yes, reset</button><button class="btn sm ghost" type="button" data-reset="no">Keep it</button>'; }
     else if (a.reset === 'yes') { doReset($('#reset-subs') && $('#reset-subs').checked); }

@@ -490,12 +490,24 @@ function hallHTML() {
   if (!ws.length) return '';
   return '<section class="band" id="hall"><div class="wrap"><div class="sec-head"><div><p class="eyebrow muted">Hall of fame</p><h2>Winning detectives</h2></div></div><div class="hall">' + ws.map(r => '<div class="trophy"><span class="r">' + esc(ROUNDS[r].final ? 'Grand prize' : ROUNDS[r].label + ' puzzle') + '</span><b>' + esc(PUB.winners[r].cls) + '</b></div>').join('') + '</div></div></section>';
 }
+const WINCHESTER_CLASSES = ["100-DODDS/CONKRIGHT", "101-SHEPHERD", "102-DUBYK", "103-MURRAY/BEECH", "111-KANELLIS/SHKORDOFF", "200-LYONS", "201-E.WRIGHT/MYLES", "202-S.WRIGHT", "203-MCVEEN", "204-PAULINO", "205-SILVERWOOD", "206-MCMURTRIE", "207-CONNELLY/BEATON", "208-MOORE", "209-MOLONEY", "211-PERKINS", "213-AYER", "215-PAQUIN", "216-WHILLANS", "217-HOEFS", "218-BENNETT"];
+const STAFF_OPT = '__staff__';
+function isStaffCls(c) { return /^STAFF-.+/.test(c || ''); }
 function classField(id, sel, hint) {
   const classes = PUB.settings.classes || [];
   if (!classes.length) return '<input type="text" id="' + id + '" required maxlength="80" placeholder="Room 104, Ms. Patel" value="' + esc(sel || '') + '">' + (hint ? '<span class="hint">Use the same name every day so the office can match your answers.</span>' : '');
-  const opts = classes.slice();
-  if (sel && opts.indexOf(sel) < 0) sel = '';
-  return '<select id="' + id + '" required><option value="">Choose your class\u2026</option>' + opts.map(c => '<option value="' + esc(c) + '"' + (c === sel ? ' selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>' + (hint ? '<span class="hint">Don\u2019t see your class? Ask the office to add it.</span>' : '');
+  const staff = isStaffCls(sel), staffName = staff ? sel.slice(6) : '';
+  if (sel && !staff && classes.indexOf(sel) < 0) sel = '';
+  return '<select id="' + id + '" required data-cls="' + id + '"><option value="">Choose your class\u2026</option>' + classes.map(c => '<option value="' + esc(c) + '"' + (c === sel ? ' selected' : '') + '>' + esc(c) + '</option>').join('')
+    + '<option value="' + STAFF_OPT + '"' + (staff ? ' selected' : '') + '>Not a homeroom teacher? Enter your name\u2026</option></select>'
+    + '<div class="field" id="' + id + '-staffwrap"' + (staff ? '' : ' hidden') + ' style="margin-top:8px"><label for="' + id + '-staff">Your last name</label><input type="text" id="' + id + '-staff" maxlength="40" autocomplete="family-name" placeholder="e.g. SMITH" value="' + esc(staffName) + '"' + (staff ? ' required' : '') + '><span class="hint">Your answer is saved as STAFF-YOURNAME. Use the same name every day.</span></div>'
+    + (hint ? '<span class="hint">Homeroom classes are listed by room number. Everyone else, choose the last option.</span>' : '');
+}
+function readCls(id) {
+  const el = $('#' + id); if (!el) return '';
+  if (el.value !== STAFF_OPT) return el.value.trim().slice(0, 80);
+  const n = ($('#' + id + '-staff').value || '').toUpperCase().replace(/[^A-Z0-9 .'\/-]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
+  return n ? 'STAFF-' + n : '';
 }
 function optList(group, sel) {
   const groups = group ? [group] : ['person', 'place', 'thing'], lab = { person: 'People', place: 'Places', thing: 'Things' };
@@ -542,8 +554,8 @@ function renderSheet(force) {
 }
 async function onSubmit(form) {
   const r = form.getAttribute('data-sheetround'), R = ROUNDS[r], btn = $('#f-submit');
-  const e = { round: r, cls: $('#f-cls').value.trim().slice(0, 80), src: 'Website' };
-  if (!e.cls) { toast('Add your class name first.'); return; }
+  const e = { round: r, cls: readCls('f-cls'), src: 'Website' };
+  if (!e.cls) { toast(($('#f-cls') && $('#f-cls').value === STAFF_OPT) ? 'Type your name first.' : 'Choose your class first.'); return; }
   if (R.final) { e.person = $('#f-person').value; e.place = $('#f-place').value; e.thing = $('#f-thing').value; e.story = $('#f-story').value.trim().slice(0, 3000); }
   else { R.fields.forEach(f => { e[f[0]] = $('#f-' + f[0]).value; }); e.tb = String($('#f-tb').value).slice(0, 12); }
   LS.set('wps-cls', e.cls);
@@ -602,7 +614,7 @@ function renderPreview() {
 function pvCheck(e, st) {
   const errs = [], R = ROUNDS[e.round];
   if (!e.cls) errs.push('Choose a class.');
-  if (st.settings.classes && st.settings.classes.length && e.cls && st.settings.classes.indexOf(e.cls) < 0) errs.push('That class isn’t on your class list, so the database would refuse it.');
+  if (st.settings.classes && st.settings.classes.length && e.cls && st.settings.classes.indexOf(e.cls) < 0 && !isStaffCls(e.cls)) errs.push('That class isn’t on your class list, so the database would refuse it.');
   if (!(R.opens in st.released) || (R.closes in st.released)) errs.push('This answer sheet would be closed at this point in the week.');
   if (R.final) { if (!e.person || !e.place || !e.thing) errs.push('Pick a person, a place and a thing.'); }
   else { R.fields.forEach(f => { if (!e[f[0]]) errs.push('Answer “' + f[1] + '”.'); }); if (e.tb === '' || isNaN(Number(e.tb))) errs.push('Enter a tiebreaker number.'); }
@@ -610,7 +622,7 @@ function pvCheck(e, st) {
 }
 function pvSubmit(form) {
   const r = form.getAttribute('data-sheetround'), R = ROUNDS[r];
-  const e = { round: r, cls: $('#f-cls').value.trim().slice(0, 80) };
+  const e = { round: r, cls: readCls('f-cls') };
   if (R.final) { e.person = $('#f-person').value; e.place = $('#f-place').value; e.thing = $('#f-thing').value; e.story = $('#f-story').value.trim().slice(0, 3000); }
   else { R.fields.forEach(f => { e[f[0]] = $('#f-' + f[0]).value; }); e.tb = String($('#f-tb').value).slice(0, 12); }
   const st = pvState(), errs = pvCheck(e, st), out = $('#sendres');
@@ -755,7 +767,7 @@ function setupHTML() {
   let h = '';
   h += '<div class="box"><h3>Case file</h3>' + (SEC.content ? '<p class="ok-note">The clues and answers are loaded.</p><p class="muted">Loading the file again replaces the clue wording and answer key, including any wording you edited. Your secret tiebreaker numbers, video links, checklist, answers and photos are kept.</p>' : '<p>Load <code>clue-casefile.json</code> to put the clues and answer key into the database. Keep that file out of your GitHub repo: anyone can read a public repo.</p>') + '<div class="field"><label for="casefile">Case file (.json)</label><input type="file" accept="application/json,.json" id="casefile" data-casefile="1"></div></div>';
   h += '<form class="setup-grid" id="setupform"><div class="box"><h3>The basics</h3><div class="row2"><div class="field"><label for="s-school">School name</label><input type="text" id="s-school" value="' + esc(st.school || '') + '"></div><div class="field"><label for="s-day1">Day 1 (first day students hear Wadsworth)</label><input type="date" id="s-day1" value="' + esc(st.day1 || '') + '"><span class="hint">The program runs 4 school days from here; weekends are skipped. Prep day is the school day before.</span></div></div><div class="row2"><div class="field"><label for="s-am">Morning announcements</label><input type="time" id="s-am" value="' + esc(st.times.am) + '"></div><div class="field"><label for="s-mid">Midday announcement</label><input type="time" id="s-mid" value="' + esc(st.times.mid) + '"></div><div class="field"><label for="s-pm">End-of-day announcements</label><input type="time" id="s-pm" value="' + esc(st.times.pm) + '"></div></div></div>';
-  h += '<div class="box"><h3>Classes</h3><p class="muted">One class per line, exactly as you want it to appear, for example <code>Room 104 \u00b7 Ms. Patel</code>. Teachers pick from this list on the answer sheet, so every answer lines up. Add a line such as <code>Staff \u00b7 Mr. Lee</code> for staff playing on their own. Leave it empty to let teachers type their class instead.</p><div class="field"><label for="s-classes">Class list</label><textarea id="s-classes" style="min-height:220px">' + esc((st.classes || []).join('\n')) + '</textarea></div></div><div class="box"><h3>Suspects and places</h3><p class="muted">Rename a suspect if needed (Ms. White can become Mr. White), add who plays each one, and upload photos for the evidence board. Anyone with the site link can see these.</p><div class="photos">' + S.filter(s => s.g !== 'thing').map(s => { const ph = s.id in PEND ? PEND[s.id] : PHOTOS[s.id]; return '<div class="ph"><div class="pic" id="php-' + s.id + '">' + (ph ? '<img src="' + ph + '" alt="">' : iconFor(s)) + '</div>' + (s.g === 'person' ? '<input type="text" id="s-name-' + s.id + '" aria-label="Name on the board" value="' + esc(st.names[s.id] || s.name) + '"><input type="text" id="s-actor-' + s.id + '" aria-label="Played by" placeholder="Played by…" value="' + esc(st.actors[s.id] || '') + '">' : '<b>' + esc(s.name) + '</b>') + '<input type="file" accept="image/*" id="s-photo-' + s.id + '" data-photo="' + s.id + '" aria-label="Photo for ' + esc(s.name) + '">' + (ph ? '<button class="btn sm ghost" type="button" data-clearphoto="' + s.id + '">Remove photo</button>' : '') + '</div>'; }).join('') + '</div></div>';
+  h += '<div class="box"><h3>Classes</h3><p class="muted">One class per line, exactly as you want it to appear, for example <code>Room 104 \u00b7 Ms. Patel</code>. Teachers pick from this list on the answer sheet, so every answer lines up. Add a line such as <code>Staff \u00b7 Mr. Lee</code> for staff playing on their own. Leave it empty to let teachers type their class instead.</p><div class="field"><label for="s-classes">Class list</label><textarea id="s-classes" style="min-height:220px">' + esc(((st.classes && st.classes.length) ? st.classes : WINCHESTER_CLASSES).join('\n')) + '</textarea></div></div><div class="box"><h3>Suspects and places</h3><p class="muted">Rename a suspect if needed (Ms. White can become Mr. White), add who plays each one, and upload photos for the evidence board. Anyone with the site link can see these.</p><div class="photos">' + S.filter(s => s.g !== 'thing').map(s => { const ph = s.id in PEND ? PEND[s.id] : PHOTOS[s.id]; return '<div class="ph"><div class="pic" id="php-' + s.id + '">' + (ph ? '<img src="' + ph + '" alt="">' : iconFor(s)) + '</div>' + (s.g === 'person' ? '<input type="text" id="s-name-' + s.id + '" aria-label="Name on the board" value="' + esc(st.names[s.id] || s.name) + '"><input type="text" id="s-actor-' + s.id + '" aria-label="Played by" placeholder="Played by…" value="' + esc(st.actors[s.id] || '') + '">' : '<b>' + esc(s.name) + '</b>') + '<input type="file" accept="image/*" id="s-photo-' + s.id + '" data-photo="' + s.id + '" aria-label="Photo for ' + esc(s.name) + '">' + (ph ? '<button class="btn sm ghost" type="button" data-clearphoto="' + s.id + '">Remove photo</button>' : '') + '</div>'; }).join('') + '</div></div>';
   h += '<div class="btnrow"><button class="btn brass" type="submit">Save</button><span class="muted">Updates the public site right away.</span></div></form>';
   h += '<div class="box"><h3>Secret settings</h3><p class="muted">Not shown on the public site until you release the answer.</p><div class="row2">' + [['r2','Day 1: seconds Wadsworth balances a teacup'],['r3','Day 2: steps from the front doors to the library'],['r4','Day 3: seconds for 3 front-foyer laps']].map(x => '<div class="field"><label for="s-tb-' + x[0] + '">' + x[1] + '</label><input type="number" id="s-tb-' + x[0] + '" min="0" step="1" value="' + esc(ans[x[0]] && ans[x[0]].tb != null ? ans[x[0]].tb : '') + '"></div>').join('') + '</div><p class="muted">Make up the teacup number; measure the steps and the laps. Nobody can check these, so the closest guess is simply the closest to your number.</p><button class="btn sm" type="button" data-savelap="1">Save tiebreaker answers</button></div>';
   h += '<div class="box"><h3>Picture puzzles</h3><p class="muted">Upload the two poster puzzles from the Posters of Clues file (a screenshot or photo is fine). They stay hidden until you release that morning’s broadcast.</p><div class="photos">' + POSTERS.map(p => '<div class="ph"><div class="pic" id="post-' + p[0] + '">Not uploaded</div><b>' + esc(p[1]) + '</b><input type="file" accept="image/*" id="s-post-' + p[0] + '" data-poster="' + p[0] + '" aria-label="Upload ' + esc(p[1]) + '"></div>').join('') + '</div></div>';
@@ -844,6 +856,7 @@ async function doReset(alsoSubs) {
 function selectAll(el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 document.addEventListener('change', ev => {
   const t = ev.target, a = t.dataset || {};
+  if (a.cls) { const w = $('#' + a.cls + '-staffwrap'), inp = $('#' + a.cls + '-staff'), on = t.value === STAFF_OPT; if (w) w.hidden = !on; if (inp) { inp.required = on; if (on) inp.focus(); } return; }
   if (a.pvat) { PV.at = t.value; LS.set('wps-pv-at', PV.at); renderPreview(); return; }
   if (a.pvwin) { PV.winners = t.checked; LS.set('wps-pv-win', PV.winners); renderPreview(); return; }
   if (a.check) { const done = clone(SEC.check.done || {}); if (t.checked) done[a.check] = true; else delete done[a.check]; SEC.check = { done }; setDoc(doc(db, 'secret', 'checklist'), { done }).catch(() => toast('Couldn’t save the checklist.')); return; }
@@ -879,7 +892,7 @@ document.addEventListener('submit', ev => {
   if (f.id === 'pvform') { pvSubmit(f); return; }
   if (f.id === 'subform') { onSubmit(f); return; }
   if (f.id === 'paperform') {
-    const r = ROUNDTAB, R = ROUNDS[r], e = { round: r, cls: $('#pp-cls').value.trim(), src: 'Office', at: serverTimestamp() };
+    const r = ROUNDTAB, R = ROUNDS[r], e = { round: r, cls: readCls('pp-cls'), src: 'Office', at: serverTimestamp() };
     if (!e.cls) return;
     if (R.final) { e.person = $('#pp-person').value; e.place = $('#pp-place').value; e.thing = $('#pp-thing').value; e.story = $('#pp-story').value.trim(); }
     else { R.fields.forEach(x => { e[x[0]] = $('#pp-' + x[0]).value; }); e.tb = String($('#pp-tb').value); }

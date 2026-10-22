@@ -27,10 +27,11 @@ service cloud.firestore {
           || (r == 'final' && ('d5am' in rel) && !('d5fin' in rel));
     }
 
-    // If the producer has set a class list, the class must be one of them.
+    // If the producer has set a class list, the class must be one of them,
+    // or a non-homeroom staff member entered as STAFF-NAME.
     function classListed(c) {
       let st = get(/databases/$(database)/documents/public/state).data.settings;
-      return !('classes' in st) || st.classes.size() == 0 || c in st.classes;
+      return !('classes' in st) || st.classes.size() == 0 || c in st.classes || c.matches('STAFF-.+');
     }
 
     function shortStr(d, k, max) {

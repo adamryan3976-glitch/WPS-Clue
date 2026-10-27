@@ -498,14 +498,14 @@ function classField(id, sel, hint) {
   const staff = isStaffCls(sel), staffName = staff ? sel.slice(6) : '';
   if (sel && !staff && classes.indexOf(sel) < 0) sel = '';
   return '<select id="' + id + '" required data-cls="' + id + '"><option value="">Choose your class\u2026</option>' + classes.map(c => '<option value="' + esc(c) + '"' + (c === sel ? ' selected' : '') + '>' + esc(c) + '</option>').join('')
-    + '<option value="' + STAFF_OPT + '"' + (staff ? ' selected' : '') + '>Not a homeroom teacher? Enter your name\u2026</option></select>'
-    + '<div class="field" id="' + id + '-staffwrap"' + (staff ? '' : ' hidden') + ' style="margin-top:8px"><label for="' + id + '-staff">Your last name</label><input type="text" id="' + id + '-staff" maxlength="40" autocomplete="family-name" placeholder="e.g. SMITH" value="' + esc(staffName) + '"' + (staff ? ' required' : '') + '><span class="hint">Your answer is saved as STAFF-YOURNAME. Use the same name every day.</span></div>'
-    + (hint ? '<span class="hint">Homeroom classes are listed by room number. Everyone else, choose the last option.</span>' : '');
+    + '<option value="' + STAFF_OPT + '"' + (staff ? ' selected' : '') + '>Other (individual or small group)</option></select>'
+    + '<div class="field" id="' + id + '-staffwrap"' + (staff ? '' : ' hidden') + ' style="margin-top:8px"><label for="' + id + '-staff">Name for this submission</label><input type="text" id="' + id + '-staff" maxlength="40" autocomplete="off" placeholder="e.g. SMITH, or SMITH &amp; JONES, or LIBRARY TEAM" value="' + esc(staffName) + '"' + (staff ? ' required' : '') + '><span class="hint">Your own name, or a name for your group. Use the same name every day so your answers match up.</span></div>'
+    + (hint ? '<span class="hint">Homeroom classes are listed by room number. Not a homeroom class? Choose <b>Other</b> at the bottom.</span>' : '');
 }
 function readCls(id) {
   const el = $('#' + id); if (!el) return '';
   if (el.value !== STAFF_OPT) return el.value.trim().slice(0, 80);
-  const n = ($('#' + id + '-staff').value || '').toUpperCase().replace(/[^A-Z0-9 .'\/-]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
+  const n = ($('#' + id + '-staff').value || '').toUpperCase().replace(/[^A-Z0-9 .'\/&-]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
   return n ? 'STAFF-' + n : '';
 }
 function optList(group, sel) {
@@ -554,7 +554,7 @@ function renderSheet(force) {
 async function onSubmit(form) {
   const r = form.getAttribute('data-sheetround'), R = ROUNDS[r], btn = $('#f-submit');
   const e = { round: r, cls: readCls('f-cls'), src: 'Website' };
-  if (!e.cls) { toast(($('#f-cls') && $('#f-cls').value === STAFF_OPT) ? 'Type your name first.' : 'Choose your class first.'); return; }
+  if (!e.cls) { toast(($('#f-cls') && $('#f-cls').value === STAFF_OPT) ? 'Type a name for your submission first.' : 'Choose your class first.'); return; }
   if (R.final) { e.person = $('#f-person').value; e.place = $('#f-place').value; e.thing = $('#f-thing').value; e.story = $('#f-story').value.trim().slice(0, 3000); }
   else { R.fields.forEach(f => { e[f[0]] = $('#f-' + f[0]).value; }); e.tb = String($('#f-tb').value).slice(0, 12); }
   LS.set('wps-cls', e.cls);

@@ -74,7 +74,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* dial */
 .dial{margin-top:6px;background:#00000033;border:1px solid #ffffff1c;border-radius:14px;padding:16px 18px 12px}
-.dial-scale{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.dial-scale{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
 .dial-day{position:relative;text-align:center;padding-top:30px}
 .dial-day .ticks{position:absolute;top:0;left:12%;right:12%;display:flex;justify-content:space-between;height:20px;align-items:flex-end}
 .dial-day .ticks span{width:3px;height:14px;border-radius:2px;background:#ffffff2e}
@@ -340,38 +340,38 @@ const ICON = {
 };
 function iconFor(s) { return s.g === 'person' ? ICON.person : ICON[s.id]; }
 
-const NDAYS = 4;
+const NDAYS = 5;
 const ITEMS = [
-  { id: 'd1pm', day: 1, slot: 'am', label: 'Episode 1: Wadsworth arrives' },
-  { id: 'd2am', day: 1, slot: 'am', label: 'Episode 2.1: The suspect list and Riddle No. 1' },
-  { id: 'd2mid', day: 1, slot: 'mid', label: 'Episode 2.2: Riddle answer and winner' },
-  { id: 'd2pm', day: 1, slot: 'pm', label: 'Episode 2.3: Interview with Colonel Mustard' },
-  { id: 'd3am', day: 2, slot: 'am', label: 'Episode 3.1: Two new puzzles' },
-  { id: 'd3mid', day: 2, slot: 'mid', label: 'Episode 3.2: Puzzle answers and winner' },
-  { id: 'd3pm', day: 2, slot: 'pm', label: 'Episode 3.3: Interview with Mrs. Peacock' },
-  { id: 'd4am', day: 3, slot: 'am', label: 'Episode 4.1: A message from Yvette' },
-  { id: 'd4mid', day: 3, slot: 'mid', label: 'Episode 4.2: Puzzle answers and winner' },
-  { id: 'd4pm', day: 3, slot: 'pm', label: 'Episode 4.3: Interview with Professor Plum and Ms. White' },
-  { id: 'd5am', day: 4, slot: 'am', label: 'Episode 5.1: The final clue' },
-  { id: 'd5fin', day: 4, slot: 'pm', label: 'Episode 5.2: Case closed' }
+  { id: 'd1pm', day: 1, slot: 'pm', label: 'Episode 1: Wadsworth arrives' },
+  { id: 'd2am', day: 2, slot: 'am', label: 'Episode 2.1: The suspect list and Riddle No. 1' },
+  { id: 'd2mid', day: 2, slot: 'mid', label: 'Episode 2.2: Riddle answer and winner' },
+  { id: 'd2pm', day: 2, slot: 'pm', label: 'Episode 2.3: Interview with Colonel Mustard' },
+  { id: 'd3am', day: 3, slot: 'am', label: 'Episode 3.1: Two new puzzles' },
+  { id: 'd3mid', day: 3, slot: 'mid', label: 'Episode 3.2: Puzzle answers and winner' },
+  { id: 'd3pm', day: 3, slot: 'pm', label: 'Episode 3.3: Interview with Mrs. Peacock' },
+  { id: 'd4am', day: 4, slot: 'am', label: 'Episode 4.1: A message from Yvette' },
+  { id: 'd4mid', day: 4, slot: 'mid', label: 'Episode 4.2: Puzzle answers and winner' },
+  { id: 'd4pm', day: 4, slot: 'pm', label: 'Episode 4.3: Interview with Professor Plum and Ms. White' },
+  { id: 'd5am', day: 5, slot: 'am', label: 'Episode 5.1: The final clue' },
+  { id: 'd5fin', day: 5, slot: 'pm', label: 'Episode 5.2: Case closed' }
 ];
 const SLOTNAME = { am: 'Morning announcements', mid: 'Midday announcement', pm: 'End-of-day announcements' };
 const TBMAP = { d2mid: 'r2', d3mid: 'r3', d4mid: 'r4' };
 const ROUNDS = {
-  r2: { day: 1, label: 'Day 1', opens: 'd2am', closes: 'd2mid', fields: [['a1', 'Answer to the riddle']], tbq: 'How many seconds can Wadsworth balance a teacup on his head before it wobbles off?', due: 'noon' },
-  r3: { day: 2, label: 'Day 2', opens: 'd3am', closes: 'd3mid', fields: [['a1', 'Answer to the episode riddle'], ['a2', 'Answer to the picture puzzle']], tbq: 'How many steps does it take Wadsworth to walk from the front doors to the library?', due: 'noon' },
-  r4: { day: 3, label: 'Day 3', opens: 'd4am', closes: 'd4mid', fields: [['a1', 'Answer to the episode riddle'], ['a2', 'Answer to the picture puzzle']], tbq: 'How many seconds did it take to walk 3 laps around the front foyer yesterday?', due: 'noon' },
-  final: { day: 4, label: 'Final day', opens: 'd5am', closes: 'd5fin', final: true, due: '1:00 p.m.' }
+  r2: { day: 2, label: 'Day 2', opens: 'd2am', closes: 'd2mid', fields: [['a1', 'Answer to the riddle']], tbq: 'How many seconds can Wadsworth balance a teacup on his head before it wobbles off?', due: 'noon' },
+  r3: { day: 3, label: 'Day 3', opens: 'd3am', closes: 'd3mid', fields: [['a1', 'Answer to the episode riddle'], ['a2', 'Answer to the picture puzzle']], tbq: 'How many steps does it take Wadsworth to walk from the front doors to the library?', due: 'noon' },
+  r4: { day: 4, label: 'Day 4', opens: 'd4am', closes: 'd4mid', fields: [['a1', 'Answer to the episode riddle'], ['a2', 'Answer to the picture puzzle']], tbq: 'How many seconds did it take to walk 3 laps around the front foyer yesterday?', due: 'noon' },
+  final: { day: 5, label: 'Final day', opens: 'd5am', closes: 'd5fin', final: true, due: '1:00 p.m.' }
 };
 const RKEYS = ['r2', 'r3', 'r4', 'final'];
-const POSTERS = [['p3', 'Day 2 poster (off + ice)', 'd3am'], ['p4', 'Day 3 poster (staff + broom)', 'd4am']];
+const POSTERS = [['p3', 'Day 3 poster (off + ice)', 'd3am'], ['p4', 'Day 4 poster (staff + broom)', 'd4am']];
 
 const CHECK = {
-  0: ['Send the \u201chaving a little fun\u201d email to staff (they\u2019re in for the PA Day)', 'Hang Wadsworth\u2019s letter, his List and the 12 suspect posters by the front entrance and main hallways', 'Rehearse Episodes 1 and 2.1 with Wadsworth and the sound effects', 'Check the class list in Setup', 'Pick the secret Day 1 tiebreaker number (teacup seconds) and enter it in Setup', 'Use Preview to walk through the whole week', 'Send staff the link to this website'],
-  1: ['Send the \u201c1st Puzzle\u201d staff email', 'Air Episode 1, then Episode 2.1 right after it, in the morning announcements', 'Release both on this site', 'Watch answers come in by noon and crown a winner', 'Air Episode 2.2, release the answer, deliver the prize', 'Cross off the Candy Stick on the hallway posters', 'Arrange class coverage for Colonel Mustard', 'Air Episode 2.3 and release the interview', 'Count your steps from the front doors to the library (tomorrow\u2019s tiebreaker) and enter it in Setup'],
-  2: ['Send the \u201cClue rolls on!\u201d staff email', 'Hang the off-and-ice picture puzzle around the school', 'Air Episode 3.1 and release the puzzles', 'Watch answers come in by noon and crown a winner', 'Air Episode 3.2, release the answers, deliver the prize', 'Cross off the Wrench and the Office on the posters', 'Time yourself walking 3 laps of the front foyer (tomorrow\u2019s tiebreaker) and enter it in Setup', 'Arrange class coverage for Mrs. Peacock', 'Air Episode 3.3 and release the interview'],
-  3: ['Send the \u201cKeeping it going\u201d staff email', 'Hang the staff-and-broom picture puzzle', 'Air Episode 4.1 with Yvette and release her message', 'Watch answers come in by noon and crown a winner', 'Air Episode 4.2, release the answers, deliver the prize', 'Cross off the Library and the Staffroom on the posters', 'Arrange coverage for Professor Plum and Ms. White', 'Air Episode 4.3 and release the interview', 'Rehearse the finale with Wadsworth and Ms. White (top secret)'],
-  4: ['Send the \u201cClue last day\u201d staff email', 'Get the whole-school treat ready for lunch', 'Air Episode 5.1 with the final clue and release it', 'Read the final answers by 1:00 p.m. and pick the best story', 'Air the finale, Episode 5.2', 'Release \u201cCase closed\u201d and feature the winning story', 'Deliver the grand prize']
+  1: ['Make sure Wadsworth\u2019s letter, his List and the 12 suspect posters are up by the front entrance and main hallways', 'Check the class list in Setup and click Save', 'Pick the secret Day 2 tiebreaker number (teacup seconds) and enter it in Setup', 'Paste the Episode 1 video link into Run of show', 'Use Preview to walk through the whole week', 'Send staff the link to this website', 'Air Episode 1 at the end of the day', 'Release \u201cWadsworth arrives\u201d on this site'],
+  2: ['Send the \u201c1st Puzzle\u201d staff email', 'Air Episode 2.1 and release the list and riddle', 'Watch answers come in by noon and crown a winner', 'Air Episode 2.2, release the answer, deliver the prize', 'Cross off the Candy Stick on the hallway posters', 'Arrange class coverage for Colonel Mustard', 'Air Episode 2.3 and release the interview', 'Count your steps from the front doors to the library (tomorrow\u2019s tiebreaker) and enter it in Setup'],
+  3: ['Send the \u201cClue rolls on!\u201d staff email', 'Hang the off-and-ice picture puzzle around the school', 'Air Episode 3.1 and release the puzzles', 'Watch answers come in by noon and crown a winner', 'Air Episode 3.2, release the answers, deliver the prize', 'Cross off the Wrench and the Office on the posters', 'Time yourself walking 3 laps of the front foyer (tomorrow\u2019s tiebreaker) and enter it in Setup', 'Arrange class coverage for Mrs. Peacock', 'Air Episode 3.3 and release the interview'],
+  4: ['Send the \u201cKeeping it going\u201d staff email', 'Hang the staff-and-broom picture puzzle', 'Air Episode 4.1 with Yvette and release her message', 'Watch answers come in by noon and crown a winner', 'Air Episode 4.2, release the answers, deliver the prize', 'Cross off the Library and the Staffroom on the posters', 'Arrange coverage for Professor Plum and Ms. White', 'Air Episode 4.3 and release the interview', 'Rehearse the finale with Wadsworth and Ms. White (top secret)'],
+  5: ['Send the \u201cClue last day\u201d staff email', 'Get the whole-school treat ready for lunch', 'Air Episode 5.1 with the final clue and release it', 'Read the final answers by 1:00 p.m. and pick the best story', 'Air the finale, Episode 5.2', 'Release \u201cCase closed\u201d and feature the winning story', 'Deliver the grand prize']
 };
 function prepDate() { const d = dayDate(1); do { d.setDate(d.getDate() - 1); } while (d.getDay() === 0 || d.getDay() === 6); return d; }
 
@@ -477,7 +477,7 @@ function boardHTML() {
 }
 function logHTML() {
   const rel = ITEMS.filter(it => isRel(it.id) && it.id !== 'd5fin');
-  if (!rel.length) return '<section class="band" id="log"><div class="wrap"><div class="sec-head"><div><p class="eyebrow muted">Case log</p><h2>Nothing on the record yet</h2></div></div><p class="muted">Every clue, answer and witness statement will be logged here right after it airs. The first broadcast is ' + esc(fmtDay(dayDate(1))) + ', in the morning announcements.</p></div></section>';
+  if (!rel.length) return '<section class="band" id="log"><div class="wrap"><div class="sec-head"><div><p class="eyebrow muted">Case log</p><h2>Nothing on the record yet</h2></div></div><p class="muted">Every clue, answer and witness statement will be logged here right after it airs. The first broadcast is ' + esc(fmtDay(dayDate(1))) + ', at the end of the day.</p></div></section>';
   let h = '<section class="band" id="log"><div class="wrap"><div class="sec-head"><div><p class="eyebrow muted">Case log</p><h2>Clues and statements</h2></div><p class="muted">Newest first. Missed an announcement? Everything that has aired is here.</p></div><div class="log">';
   for (let d = 5; d >= 1; d--) {
     const its = rel.filter(it => it.day === d).reverse(); if (!its.length) continue;
@@ -494,8 +494,7 @@ const WINCHESTER_CLASSES = ["100-DODDS/CONKRIGHT", "101-SHEPHERD", "102-DUBYK", 
 const STAFF_OPT = '__staff__';
 function isStaffCls(c) { return /^STAFF-.+/.test(c || ''); }
 function classField(id, sel, hint) {
-  const classes = PUB.settings.classes || [];
-  if (!classes.length) return '<input type="text" id="' + id + '" required maxlength="80" placeholder="Room 104, Ms. Patel" value="' + esc(sel || '') + '">' + (hint ? '<span class="hint">Use the same name every day so the office can match your answers.</span>' : '');
+  const classes = (PUB.settings.classes && PUB.settings.classes.length) ? PUB.settings.classes : WINCHESTER_CLASSES;
   const staff = isStaffCls(sel), staffName = staff ? sel.slice(6) : '';
   if (sel && !staff && classes.indexOf(sel) < 0) sel = '';
   return '<select id="' + id + '" required data-cls="' + id + '"><option value="">Choose your class\u2026</option>' + classes.map(c => '<option value="' + esc(c) + '"' + (c === sel ? ' selected' : '') + '>' + esc(c) + '</option>').join('')
@@ -601,7 +600,7 @@ function renderPreview() {
   if (!SEC.content) { p.innerHTML = '<div class="box"><h3>Load the case file first</h3><p>Go to <b>Setup</b> and load <code>clue-casefile.json</code>.</p></div>'; return; }
   loadPvPosters();
   if (PV.at && !ITEMS.some(i => i.id === PV.at)) PV.at = '';
-  const opts = '<option value=""' + (PV.at ? '' : ' selected') + '>Before Day 1 (nothing released yet)</option>' + [1, 2, 3, 4].map(d => '<optgroup label="Day ' + d + ' · ' + esc(fmtDay(dayDate(d))) + '">' + ITEMS.filter(i => i.day === d).map(i => '<option value="' + i.id + '"' + (i.id === PV.at ? ' selected' : '') + '>After ' + esc(SLOTNAME[i.slot].toLowerCase()) + ': ' + esc(i.label) + (isRel(i.id) ? ' (live now)' : '') + '</option>').join('') + '</optgroup>').join('');
+  const opts = '<option value=""' + (PV.at ? '' : ' selected') + '>Before Day 1 (nothing released yet)</option>' + [1, 2, 3, 4, 5].map(d => '<optgroup label="Day ' + d + ' · ' + esc(fmtDay(dayDate(d))) + '">' + ITEMS.filter(i => i.day === d).map(i => '<option value="' + i.id + '"' + (i.id === PV.at ? ' selected' : '') + '>After ' + esc(SLOTNAME[i.slot].toLowerCase()) + ': ' + esc(i.label) + (isRel(i.id) ? ' (live now)' : '') + '</option>').join('') + '</optgroup>').join('');
   const body = withPreview(() => mastHTML() + closedHTML() + boardHTML() + logHTML() + hallHTML() + sheetHTML());
   p.innerHTML = '<div class="pv-bar"><div class="field"><label for="pv-at">Show the public site as it will look</label><select id="pv-at" data-pvat="1">' + opts + '</select></div>'
     + '<label class="check"><input type="checkbox" id="pv-win" data-pvwin="1"' + (PV.winners ? ' checked' : '') + '><span>Show sample winners</span></label>'
@@ -655,8 +654,6 @@ function showHTML() {
   let h = '';
   if (due.length) h += '<div class="due-banner"><span><b>' + due.length + ' broadcast' + (due.length > 1 ? 's are' : ' is') + ' due.</b> Release once it has aired so the case log matches the announcements.</span><button class="btn sm brass" type="button" data-release="' + due.map(i => i.id).join(',') + '">Release all due</button></div>';
   const today = new Date(), done = SEC.check.done || {};
-  { const pd = prepDate();
-    h += '<section class="day-block" aria-label="Prep day"><header><h3>Prep day</h3><span class="muted">' + esc(fmtDay(pd)) + ' \u00b7 before students hear anything</span>' + (sameDay(pd, today) ? '<span class="today">TODAY</span>' : '') + '</header><div class="day-body"><div class="rel-list"><h4>Broadcasts</h4><p class="muted">None today. Everything goes up quietly so it\u2019s in place when students arrive.</p></div><div class="check-list"><h4>To do</h4>' + CHECK[0].map((t, i) => { const k = 'p-' + i; return '<label class="check"><input type="checkbox" id="ck-' + k + '" data-check="' + k + '"' + (done[k] ? ' checked' : '') + '><span>' + esc(t) + '</span></label>'; }).join('') + '</div></div></section>'; }
   for (let d = 1; d <= NDAYS; d++) {
     const dd = dayDate(d), its = ITEMS.filter(it => it.day === d);
     h += '<section class="day-block" aria-label="Day ' + d + '"><header><h3>Day ' + d + '</h3><span class="muted">' + esc(fmtDay(dd)) + '</span>' + (sameDay(dd, today) ? '<span class="today">TODAY</span>' : '') + '</header><div class="day-body"><div class="rel-list"><h4>Broadcasts</h4>';
@@ -738,7 +735,7 @@ function answersHTML() {
 }
 
 /* soundboard */
-const SLOTS = [['start', 'Episode start'], ['drama', 'Dramatic exclamation'], ['exit', 'Character exit / enter'], ['end', 'Episode exit music'], ['sus', 'Among Us “sus”'], ['final', 'Final clue (Day 4)']];
+const SLOTS = [['start', 'Episode start'], ['drama', 'Dramatic exclamation'], ['exit', 'Character exit / enter'], ['end', 'Episode exit music'], ['sus', 'Among Us “sus”'], ['final', 'Final clue (Day 5)']];
 let PLAYING = null, PLAYKEY = null, IDB = null;
 function idb() { return new Promise((res, rej) => { if (IDB) return res(IDB); try { const rq = indexedDB.open('wps-clue-sounds', 1); rq.onupgradeneeded = () => rq.result.createObjectStore('clips'); rq.onsuccess = () => { IDB = rq.result; res(IDB); }; rq.onerror = () => rej(rq.error); } catch (e) { rej(e); } }); }
 function idbGet(k) { return idb().then(d => new Promise(res => { const t = d.transaction('clips').objectStore('clips').get(k); t.onsuccess = () => res(t.result || null); t.onerror = () => res(null); })).catch(() => null); }
@@ -766,10 +763,10 @@ function setupHTML() {
   const st = PUB.settings, ans = SEC.answers || {};
   let h = '';
   h += '<div class="box"><h3>Case file</h3>' + (SEC.content ? '<p class="ok-note">The clues and answers are loaded.</p><p class="muted">Loading the file again replaces the clue wording and answer key, including any wording you edited. Your secret tiebreaker numbers, video links, checklist, answers and photos are kept.</p>' : '<p>Load <code>clue-casefile.json</code> to put the clues and answer key into the database. Keep that file out of your GitHub repo: anyone can read a public repo.</p>') + '<div class="field"><label for="casefile">Case file (.json)</label><input type="file" accept="application/json,.json" id="casefile" data-casefile="1"></div></div>';
-  h += '<form class="setup-grid" id="setupform"><div class="box"><h3>The basics</h3><div class="row2"><div class="field"><label for="s-school">School name</label><input type="text" id="s-school" value="' + esc(st.school || '') + '"></div><div class="field"><label for="s-day1">Day 1 (first day students hear Wadsworth)</label><input type="date" id="s-day1" value="' + esc(st.day1 || '') + '"><span class="hint">The program runs 4 school days from here; weekends are skipped. Prep day is the school day before.</span></div></div><div class="row2"><div class="field"><label for="s-am">Morning announcements</label><input type="time" id="s-am" value="' + esc(st.times.am) + '"></div><div class="field"><label for="s-mid">Midday announcement</label><input type="time" id="s-mid" value="' + esc(st.times.mid) + '"></div><div class="field"><label for="s-pm">End-of-day announcements</label><input type="time" id="s-pm" value="' + esc(st.times.pm) + '"></div></div></div>';
+  h += '<form class="setup-grid" id="setupform"><div class="box"><h3>The basics</h3><div class="row2"><div class="field"><label for="s-school">School name</label><input type="text" id="s-school" value="' + esc(st.school || '') + '"></div><div class="field"><label for="s-day1">Day 1 (first day students hear Wadsworth)</label><input type="date" id="s-day1" value="' + esc(st.day1 || '') + '"><span class="hint">The program runs 5 school days from here (Episode 1 airs at the end of Day 1); weekends are skipped.</span></div></div><div class="row2"><div class="field"><label for="s-am">Morning announcements</label><input type="time" id="s-am" value="' + esc(st.times.am) + '"></div><div class="field"><label for="s-mid">Midday announcement</label><input type="time" id="s-mid" value="' + esc(st.times.mid) + '"></div><div class="field"><label for="s-pm">End-of-day announcements</label><input type="time" id="s-pm" value="' + esc(st.times.pm) + '"></div></div></div>';
   h += '<div class="box"><h3>Classes</h3><p class="muted">One class per line, exactly as you want it to appear, for example <code>Room 104 \u00b7 Ms. Patel</code>. Teachers pick from this list on the answer sheet, so every answer lines up. Add a line such as <code>Staff \u00b7 Mr. Lee</code> for staff playing on their own. Leave it empty to let teachers type their class instead.</p><div class="field"><label for="s-classes">Class list</label><textarea id="s-classes" style="min-height:220px">' + esc(((st.classes && st.classes.length) ? st.classes : WINCHESTER_CLASSES).join('\n')) + '</textarea></div></div><div class="box"><h3>Suspects and places</h3><p class="muted">Rename a suspect if needed (Ms. White can become Mr. White), add who plays each one, and upload photos for the evidence board. Anyone with the site link can see these.</p><div class="photos">' + S.filter(s => s.g !== 'thing').map(s => { const ph = s.id in PEND ? PEND[s.id] : PHOTOS[s.id]; return '<div class="ph"><div class="pic" id="php-' + s.id + '">' + (ph ? '<img src="' + ph + '" alt="">' : iconFor(s)) + '</div>' + (s.g === 'person' ? '<input type="text" id="s-name-' + s.id + '" aria-label="Name on the board" value="' + esc(st.names[s.id] || s.name) + '"><input type="text" id="s-actor-' + s.id + '" aria-label="Played by" placeholder="Played by…" value="' + esc(st.actors[s.id] || '') + '">' : '<b>' + esc(s.name) + '</b>') + '<input type="file" accept="image/*" id="s-photo-' + s.id + '" data-photo="' + s.id + '" aria-label="Photo for ' + esc(s.name) + '">' + (ph ? '<button class="btn sm ghost" type="button" data-clearphoto="' + s.id + '">Remove photo</button>' : '') + '</div>'; }).join('') + '</div></div>';
   h += '<div class="btnrow"><button class="btn brass" type="submit">Save</button><span class="muted">Updates the public site right away.</span></div></form>';
-  h += '<div class="box"><h3>Secret settings</h3><p class="muted">Not shown on the public site until you release the answer.</p><div class="row2">' + [['r2','Day 1: seconds Wadsworth balances a teacup'],['r3','Day 2: steps from the front doors to the library'],['r4','Day 3: seconds for 3 front-foyer laps']].map(x => '<div class="field"><label for="s-tb-' + x[0] + '">' + x[1] + '</label><input type="number" id="s-tb-' + x[0] + '" min="0" step="1" value="' + esc(ans[x[0]] && ans[x[0]].tb != null ? ans[x[0]].tb : '') + '"></div>').join('') + '</div><p class="muted">Make up the teacup number; measure the steps and the laps. Nobody can check these, so the closest guess is simply the closest to your number.</p><button class="btn sm" type="button" data-savelap="1">Save tiebreaker answers</button></div>';
+  h += '<div class="box"><h3>Secret settings</h3><p class="muted">Not shown on the public site until you release the answer.</p><div class="row2">' + [['r2','Day 2: seconds Wadsworth balances a teacup'],['r3','Day 3: steps from the front doors to the library'],['r4','Day 4: seconds for 3 front-foyer laps']].map(x => '<div class="field"><label for="s-tb-' + x[0] + '">' + x[1] + '</label><input type="number" id="s-tb-' + x[0] + '" min="0" step="1" value="' + esc(ans[x[0]] && ans[x[0]].tb != null ? ans[x[0]].tb : '') + '"></div>').join('') + '</div><p class="muted">Make up the teacup number; measure the steps and the laps. Nobody can check these, so the closest guess is simply the closest to your number.</p><button class="btn sm" type="button" data-savelap="1">Save tiebreaker answers</button></div>';
   h += '<div class="box"><h3>Picture puzzles</h3><p class="muted">Upload the two poster puzzles from the Posters of Clues file (a screenshot or photo is fine). They stay hidden until you release that morning’s broadcast.</p><div class="photos">' + POSTERS.map(p => '<div class="ph"><div class="pic" id="post-' + p[0] + '">Not uploaded</div><b>' + esc(p[1]) + '</b><input type="file" accept="image/*" id="s-post-' + p[0] + '" data-poster="' + p[0] + '" aria-label="Upload ' + esc(p[1]) + '"></div>').join('') + '</div></div>';
   return h;
 }

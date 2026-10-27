@@ -43,7 +43,7 @@ Add one document per extra producer (the principal, for example).
 Commit `index.html`, the logo and icon files, `firestore.rules`, `README.md` and `.gitignore`. In the repo, go to **Settings > Pages**, set the source to your branch, and save.
 
 ### 6. Load the case file
-Open the site, click **Producer sign-in** in the footer, and sign in. Open **Producer desk > Setup** and choose `clue-casefile.json`. Then fill in the school name, the Day 1 date (the first day students hear Wadsworth; the program runs 4 school days, with a prep day before it) and the announcement times, and add photos of your four suspects and four locations.
+Open the site, click **Producer sign-in** in the footer, and sign in. Open **Producer desk > Setup** and choose `clue-casefile.json`. Then fill in the school name, the Day 1 date (Episode 1 airs at the end of that day; the program runs 5 school days, skipping weekends) and the announcement times, and add photos of your four suspects and four locations.
 
 Upload the two picture puzzles (the off-and-ice poster for the Office, and the staff-and-broom poster for the Staffroom) under **Picture puzzles**. They stay hidden until you release that morning's broadcast.
 
@@ -53,7 +53,7 @@ Upload the two picture puzzles (the off-and-ice poster for the Office, and the s
 - **Episode videos**: upload each recording to Google Drive, share it as "anyone in Durham DSB with the link can view", and paste the link into that broadcast's box in **Run of show**. The video stays hidden until you release the broadcast, then plays right in the case log. YouTube (unlisted) links work too.
 - **Preview**: see the public site exactly as it will look after any broadcast, using your unreleased clues, puzzles, videos and secret numbers. The answer sheet there is a practice run: it shows what a teacher would see and how the answer would score, and never saves anything.
 - **Soundboard**: load the sound-effect files once from your download page, then play them with keys 1 to 6. The files stay in that computer's browser.
-- Tiebreakers are secret numbers only you know. Enter them in **Setup > Secret settings**: make up the Day 1 teacup seconds, count your steps from the front doors to the library for Day 2, and on Day 2 time 3 laps of the front foyer for Day 3. Any correct class can be crowned, so you can spread the wins around.
+- Tiebreakers are secret numbers only you know. Enter them in **Setup > Secret settings**: make up the Day 2 teacup seconds, count your steps from the front doors to the library for Day 3, and on Day 3 time 3 laps of the front foyer for Day 4. Any correct class can be crowned, so you can spread the wins around.
 - To practise first, release a few broadcasts, then use **Rehearsal reset** at the bottom of Run of show.
 
 Answer sheets close automatically when you release that day's answers, so late entries can't come in after the reveal.
